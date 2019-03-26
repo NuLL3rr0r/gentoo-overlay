@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<repositories version="1.0">
+  <repo priority="50" quality="experimental" status="unofficial">
+    <name>NuLL3rr0r</name>
+    <description>NuLL3rr0r's personal Gentoo overlaNuLL3rr0r's personal Gentoo overlayy</description>
+    <homepage>https://github.com/NuLL3rr0r/gentoo-overlay</homepage>
+    <owner>
+      <email>info@babaei.net</email>
+      <name>Mamadou Babaei</name>
+    </owner>
+    <source type="git">https://github.com/NuLL3rr0r/gentoo-overlay.git</source>
+  </repo>
+</repositories>
