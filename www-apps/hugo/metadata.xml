@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>gentoo@chaoslab.org</email>
+		<name>Ian Moone</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">gohugoio/hugo</remote-id>
+		<bugs-to>https://github.com/gohugoio/hugo/issues</bugs-to>
+		<doc>https://gohugo.io/templates/introduction/</doc>
+	</upstream>
+	<longdescription lang="en">
+		Hugo is a static HTML and CSS website generator written in Go.
+		It is optimized for speed, easy use and configurability.
+		Hugo takes a directory with content and templates and
+		renders them into a full HTML website.
+	</longdescription>
+	<use>
+		<flag name="sass">Enable SASS/SCSS support</flag>
+	</use>
+</pkgmetadata>

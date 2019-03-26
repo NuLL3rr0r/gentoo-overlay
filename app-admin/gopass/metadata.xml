@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>gentoo@chaoslab.org</email>
+		<name>Ian Moone</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">gopasspw/gopass</remote-id>
+		<bugs-to>https://github.com/gopasspw/gopass/issues</bugs-to>
+		<doc>https://www.gopass.pw/docs/</doc>
+	</upstream>
+	<longdescription lang="en">
+		gopass is a rewrite of the pass password manager
+		in Go with the aim of making it cross-platform and
+		adding additional features. The target audience are
+		professional developers and sysadmins (and especially
+		teams of those) who are well versed with a command
+		line interface. One explicit goal for this project is
+		to make it more approachable to non-technical users.
+	</longdescription>
+</pkgmetadata>
