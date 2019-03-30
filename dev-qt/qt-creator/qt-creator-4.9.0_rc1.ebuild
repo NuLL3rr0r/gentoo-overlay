@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Authors
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -19,7 +19,7 @@ else
 	MY_P=${PN}-opensource-src-${MY_PV}
 	[[ ${MY_PV} == ${PV} ]] && MY_REL=official || MY_REL=development
 	SRC_URI="https://download.qt.io/${MY_REL}_releases/${PN/-}/${PV%.*}/${MY_PV}/${MY_P}.tar.xz"
-	KEYWORDS="amd64 ~arm ~x86"
+	KEYWORDS="~amd64 ~arm ~x86"
 	S=${WORKDIR}/${MY_P}
 fi
 
@@ -28,7 +28,7 @@ fi
 QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectmanager baremetal bazaar
 	'+clang:clangcodemodel|clangformat|clangtools' clearcase cmake:cmakeprojectmanager cppcheck
 	cvs +designer git glsl:glsleditor +help ios lsp:languageclient mercurial modeling:modeleditor
-	nim perforce python:pythoneditor qbs:qbsprojectmanager qnx scxml:scxmleditor +serialterminal
+	nim perforce python:pythoneditor qbs:qbsprojectmanager qnx scxml:scxmleditor serialterminal
 	silversearcher subversion valgrind winrt)
 IUSE="doc systemd test +webengine ${QTC_PLUGINS[@]%:*}"
 
@@ -65,7 +65,11 @@ DEPEND="${CDEPEND}
 	virtual/pkgconfig
 	doc? ( >=dev-qt/qdoc-${QT_PV} )
 	test? (
-		>=dev-qt/qtdeclarative-${QT_PV}[localstorage,xml]
+		>=dev-qt/qtdeclarative-${QT_PV}[localstorage]
+		|| (
+			>=dev-qt/qtxmlpatterns-5.12.1-r1:5[qml(+)]
+			<dev-qt/qtdeclarative-5.12.0[xml]
+		)
 		>=dev-qt/qtquickcontrols2-${QT_PV}
 		>=dev-qt/qttest-${QT_PV}
 	)
