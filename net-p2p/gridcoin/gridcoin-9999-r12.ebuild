@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -24,7 +24,7 @@ IUSE="${IUSE_GUI} ${IUSE_DAEMON} ${IUSE_OPTIONAL}"
 REQUIRED_USE="|| ( daemon qt5 ) dbus? ( qt5 ) qrcode? ( qt5 )"
 
 RDEPEND=">=dev-libs/boost-1.55.0
-	>=dev-libs/openssl-1.0.1g
+	>=dev-libs/openssl-1.0.1g:=
 	>=dev-libs/libzip-1.3.0
 	dev-libs/libevent
 	sys-libs/db:5.3[cxx]
