@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://bugreports.qt.io/projects/QTCREATORBUG/</bugs-to>
+        <doc>https://doc.qt.io/qtcreator/</doc>
+        <remote-id type="github">qt-creator/qt-creator</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Qt Creator is a cross-platform IDE for development with the Qt
+        framework.
+    </longdescription>
+</pkgmetadata>

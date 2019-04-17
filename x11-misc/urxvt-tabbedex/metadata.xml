@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/mina86/urxvt-tabbedex/issues</bugs-to>
+        <remote-id type="github">mina86/urxvt-tabbedex</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        An extended version of rxvt-unicode's tabbed perl extension with man
+        new features such as:
+
+            * activity and bell markers,
+            * terminal status in the tab bar,
+            * tabs renaming (also using OSC command),
+            * user commands (so keysyms can be used),
+            * tab bar auto-hiding,
+            * preserving of -e option,
+            * and more…
+    </longdescription>
+</pkgmetadata>

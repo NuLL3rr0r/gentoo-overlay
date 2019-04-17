@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/kernelOfTruth/pulseaudio-equalizer/issues</bugs-to>
+        <remote-id type="github">kernelOfTruth/pulseaudio-equalizer</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        A LADSPA based multiband equalizer approach for getting better sound
+        out of pulseaudio.
+    </longdescription>
+</pkgmetadata>

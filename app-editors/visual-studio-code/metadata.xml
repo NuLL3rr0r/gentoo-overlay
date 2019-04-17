@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/Microsoft/vscode/issues</bugs-to>
+        <changelog>https://github.com/Microsoft/vscode-docs/tree/master/release-notes</changelog>
+        <doc>https://code.visualstudio.com/docs</doc>
+        <remote-id type="github">Microsoft/vscode</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        VS Code is a lightweight source code editor and powerful development
+        environment for building and debugging modern web and cloud
+        applications. It is free and available on your favorite platform -
+        Linux, macOS, and Windows.
+    </longdescription>
+    <use>
+        <flag name="libsecret">Enable libsecret support</flag>
+    </use>
+</pkgmetadata>
