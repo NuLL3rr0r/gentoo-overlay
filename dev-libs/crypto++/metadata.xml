@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>noloader@gmail.com</email>
+        <name>Jeffrey Walton</name>
+    </maintainer>
+    <use>
+        <flag name="asm">Support assembly hand optimized crypto functions (i.e. faster run time)</flag>
+    </use>
+    <upstream>
+        <bugs-to>https://github.com/weidai11/cryptopp/issues</bugs-to>
+        <doc>https://cryptopp.com/docs/ref/</doc>
+        <remote-id type="github">weidai11/cryptopp</remote-id>
+    </upstream>
+    <slots>
+        <subslots>so version</subslots>
+    </slots>
+</pkgmetadata>
