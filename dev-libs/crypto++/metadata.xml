@@ -2,8 +2,8 @@
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
     <maintainer type="person">
-        <email>noloader@gmail.com</email>
-        <name>Jeffrey Walton</name>
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
     </maintainer>
     <use>
         <flag name="asm">Support assembly hand optimized crypto functions (i.e. faster run time)</flag>
