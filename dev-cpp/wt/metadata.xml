@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://redmine.webtoolkit.eu/</bugs-to>
+        <changelog>https://webtoolkit.eu/wt/wt3/doc/reference/html/Releasenotes.html</changelog>
+        <doc>https://www.webtoolkit.eu/wt/documentation</doc>
+        <remote-id type="github">emweb/wt/</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Wt is a web GUI library in modern C++. Quickly develop highly
+        interactive web UIs with widgets, without having to write a single line
+        of JavaScript. Wt handles all request handling and page rendering for
+        you, so you can focus on functionality.
+    </longdescription>
+</pkgmetadata>
