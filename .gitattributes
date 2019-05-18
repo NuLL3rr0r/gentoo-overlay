@@ -1,1 +1,2 @@
 * text=auto
+dev-cpp/wt/files/WtInstall.cmake.patch -text

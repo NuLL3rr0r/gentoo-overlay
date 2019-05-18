@@ -1,6 +1,6 @@
 diff -Naur a/WtInstall.cmake b/WtInstall.cmake
 --- a/WtInstall.cmake	2018-12-14 13:23:07.000000000 +0100
-+++ b/WtInstall.cmake	2019-05-07 19:39:13.800973258 +0200
++++ b/WtInstall.cmake	2019-05-18 15:46:14.415324938 +0200
 @@ -1,2 +0,0 @@
 -EXEC_PROGRAM(mkdir ARGS -p ${DESTDIR}${RUNDIR})
 -EXEC_PROGRAM(chown ARGS ${WEBUSER}:${WEBGROUP} ${DESTDIR}${RUNDIR})
