@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -8,7 +8,7 @@ if [[ -z ${PV%%*9999} ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/daa84/${PN}.git"
 else
-	MY_PV="6a7804c"
+	MY_PV="48f7181"
 	[[ -n ${PV%%*_p*} ]] && MY_PV="v${PV}"
 	CRATES="
 	aho-corasick-0.6.10
@@ -145,15 +145,8 @@ RDEPEND="
 	>=app-editors/neovim-0.2.2
 "
 
-src_prepare() {
-	default
-	sed \
-		-e '/\(fonts\|fc-cache\|\<sed\>\)/d' \
-		-i Makefile
-}
-
 src_install() {
 	cargo_src_install
-	emake install-resources PREFIX="${ED}/usr"
+	emake install-resources DESTDIR="${ED}" PREFIX="/usr"
 	einstalldocs
 }
