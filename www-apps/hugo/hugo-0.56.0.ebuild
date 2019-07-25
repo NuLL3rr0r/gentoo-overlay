@@ -4,74 +4,74 @@
 EAPI=7
 
 # Change this when you update the ebuild
-GIT_COMMIT="a5d4c82d2f4932d4734427b83b9886253acc2d94"
+GIT_COMMIT="45f4eb9846d05fd25d482605c508c0a8d1e04c8e"
 EGO_PN="github.com/gohugoio/hugo"
 EGO_VENDOR=(
 	# Note: Keep EGO_VENDOR in sync with go.mod
 	"github.com/BurntSushi/locker a6e239ea1c69"
-	"github.com/BurntSushi/toml a368813c5e64"
+	"github.com/BurntSushi/toml v0.3.1"
 	"github.com/PuerkitoBio/purell v1.1.0"
 	"github.com/PuerkitoBio/urlesc de5bf2ad4578" # indirect
 	"github.com/alecthomas/assert 405dbfeb8e38"
-	"github.com/alecthomas/chroma v0.6.3"
+	"github.com/alecthomas/chroma v0.6.4"
 	"github.com/alecthomas/repr d37bc2a10ba1" # indirect
+	"github.com/aws/aws-sdk-go v1.19.40"
 	"github.com/bep/debounce v1.2.0"
-	"github.com/bep/gitmap v1.0.0"
+	"github.com/bep/gitmap v1.1.0"
 	"github.com/bep/go-tocss v0.6.0"
-	"github.com/chaseadamsio/goorgeous v1.1.0"
-	"github.com/danwakefield/fnmatch cbb64ac3d964"
-	"github.com/dlclark/regexp2 v1.1.6"
-	"github.com/cpuguy83/go-md2man v1.0.8" # indirect
 	"github.com/disintegration/imaging v1.6.0"
+	"github.com/dustin/go-humanize v1.0.0"
 	"github.com/eknkc/amber cdade1c07385"
-	"github.com/fortytw2/leaktest v1.2.0"
+	"github.com/fortytw2/leaktest v1.3.0"
 	"github.com/fsnotify/fsnotify v1.4.7"
+	"github.com/go-errors/errors v1.0.1"
 	"github.com/gobwas/glob v0.2.3"
-	"github.com/gobuffalo/envy v1.6.8" # inderect
+	"github.com/gohugoio/testmodBuilder/mods c56af20f2e95 github.com/gohugoio/testmodBuilder"
+	"github.com/google/go-cmp v0.3.0"
 	"github.com/gorilla/websocket v1.4.0"
 	"github.com/hashicorp/go-immutable-radix v1.0.0"
-	"github.com/hashicorp/golang-lru v0.5.0" # inderect
-	"github.com/hashicorp/hcl v1.0.0" # inderect
-	"github.com/inconshreveable/mousetrap v1.0.0" # indirect
+	"github.com/hashicorp/go-uuid v1.0.1" # indirect
 	"github.com/jdkato/prose v1.1.0"
-	"github.com/joho/godotenv v1.3.0" # inderect
-	"github.com/kr/pretty v0.1.0" # indirect
 	"github.com/kyokomi/emoji v1.5.1"
-	"github.com/magiconair/properties v1.8.0" # inderect
 	"github.com/magefile/mage v1.4.0"
+	"github.com/magiconair/properties v1.8.1" # indirect
 	"github.com/markbates/inflect v1.0.0"
-	"github.com/mattn/go-isatty v0.0.7"
-	"github.com/mattn/go-runewidth v0.0.3" # indirect
+	"github.com/mattn/go-isatty v0.0.8"
 	"github.com/miekg/mmark v1.3.6"
 	"github.com/mitchellh/hashstructure v1.0.0"
 	"github.com/mitchellh/mapstructure v1.1.2"
 	"github.com/muesli/smartcrop f6ebaa786a12"
+	"github.com/ncw/rclone v1.48.0"
 	"github.com/nfnt/resize 83c6a9932646" # indirect
 	"github.com/nicksnyder/go-i18n v1.10.0"
+	"github.com/niklasfasching/go-org v0.1.1"
 	"github.com/olekukonko/tablewriter d4647c9c7a84"
-	"github.com/pelletier/go-toml v1.2.0" # inderect
-	"github.com/pkg/errors v0.8.0"
-	"github.com/russross/blackfriday 46c73eb196ba"
+	"github.com/op/go-logging 970db520ece7"
+	"github.com/pelletier/go-toml v1.4.0" # indirect
+	"github.com/pkg/errors v0.8.1"
+	"github.com/rogpeppe/go-internal v1.3.0"
+	"github.com/russross/blackfriday a477dd164691"
 	"github.com/sanity-io/litter v1.1.0"
-	"github.com/shurcooL/sanitized_anchor_name 86672fcb3f95" # indirect
 	"github.com/spf13/afero v1.2.2"
 	"github.com/spf13/cast v1.3.0"
-	"github.com/spf13/cobra v0.0.3"
-	"github.com/spf13/fsync 12a01e648f05"
+	"github.com/spf13/cobra 67fc4837d267"
+	"github.com/spf13/fsync v0.9.0"
 	"github.com/spf13/jwalterweatherman v1.1.0"
 	"github.com/spf13/pflag v1.0.3"
-	"github.com/spf13/viper v1.3.2"
+	"github.com/spf13/viper v1.4.0"
 	"github.com/stretchr/testify v1.3.0"
 	"github.com/tdewolff/minify/v2 v2.3.7 github.com/tdewolff/minify"
-	"github.com/tdewolff/parse/v2 v2.3.5 github.com/tdewolff/parse" # inderect
-	"github.com/wellington/go-libsass 4ef5b9d5a25b" # sass
 	"github.com/yosssi/ace v0.0.5"
-	"golang.org/x/image 3fc05d484e9f github.com/golang/image"
-	"golang.org/x/net 161cd47e91fd github.com/golang/net" # indirect
-	"golang.org/x/sync 1d60e4601c6f github.com/golang/sync"
-	"golang.org/x/sys f49334f85ddc github.com/golang/sys" # indirect
-	"golang.org/x/text v0.3.0 github.com/golang/text"
-	"gopkg.in/check.v1 788fd7840127 github.com/go-check/check" # indirect
+	"go.opencensus.io v0.22.0 github.com/census-instrumentation/opencensus-go" # indirect
+	"gocloud.dev v0.15.0 github.com/google/go-cloud"
+	"golang.org/x/image f03afa92d3ff github.com/golang/image"
+	"golang.org/x/oauth2 aaccbc9213b0 github.com/golang/oauth2" # indirect
+	"golang.org/x/sync 112230192c58 github.com/golang/sync"
+	"golang.org/x/sys fae7ac547cb7 github.com/golang/sys" # indirect
+	"golang.org/x/text v0.3.2 github.com/golang/text"
+	"golang.org/x/xerrors a985d3407aa7 github.com/golang/xerrors" # indirect
+	"google.golang.org/appengine v1.6.0 github.com/golang/appengine" # indirect
+	"google.golang.org/genproto c2c4e71fbf69 github.com/googleapis/go-genproto" # indirect
 	"gopkg.in/yaml.v2 v2.2.2 github.com/go-yaml/yaml"
 )
 
