@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/mozilla/geckodriver/issues</bugs-to>
+        <changelog>https://searchfox.org/mozilla-central/source/testing/geckodriver/CHANGES.md</changelog>
+        <doc>https://developer.mozilla.org/en-US/docs/Web/WebDriver</doc>
+        <remote-id type="github">mozilla/geckodriver</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Proxy for using WebDriver clients to interact with Gecko-based browsers
+    </longdescription>
+</pkgmetadata>
