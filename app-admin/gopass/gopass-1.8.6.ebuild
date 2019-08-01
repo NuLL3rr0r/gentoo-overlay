@@ -4,7 +4,7 @@
 EAPI=7
 
 # Change this when you update the ebuild
-GIT_COMMIT="dd169b82e713c09f31fa6919342543163b5894f3"
+GIT_COMMIT="d5b0d3b906cdd9f16ad3f21e366845af7f2c22f3"
 EGO_PN="github.com/gopasspw/${PN}"
 
 inherit bash-completion-r1 golang-vcs-snapshot-r1
