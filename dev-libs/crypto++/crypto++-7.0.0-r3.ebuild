@@ -10,17 +10,13 @@ HOMEPAGE="https://cryptopp.com"
 SRC_URI="https://www.cryptopp.com/cryptopp${PV//.}.zip"
 
 LICENSE="Boost-1.0"
-SLOT="0/8" # subslot is so version
+SLOT="0/7" # subslot is so version
 KEYWORDS="alpha amd64 ~arm arm64 hppa ppc ppc64 sparc x86 ~x64-macos"
 IUSE="+asm static-libs"
 
 BDEPEND="app-arch/unzip"
 
 S="${WORKDIR}"
-
-PATCHES=(
-	"${FILESDIR}/${P}-build.patch"
-)
 
 config_uncomment() {
 	sed -i -e "s://\s*\(#define\s*$1\):\1:" config.h || die
