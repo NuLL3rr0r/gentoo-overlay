@@ -25,11 +25,11 @@ fi
 
 # TODO: unbundle sqlite
 
-QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectmanager baremetal bazaar
-	'+clang:clangcodemodel|clangformat|clangtools' clearcase cmake:cmakeprojectmanager cppcheck
-	cvs +designer git glsl:glsleditor +help ios lsp:languageclient mercurial modeling:modeleditor
-	nim perforce python:pythoneditor qbs:qbsprojectmanager qnx scxml:scxmleditor serialterminal
-	silversearcher subversion valgrind winrt)
+QTC_PLUGINS=('android:android|qmakeandroidsupport' +autotools:autotoolsprojectmanager +baremetal bazaar
+	'+clang:clangcodemodel|clangformat|clangtools' clearcase +cmake:cmakeprojectmanager +cppcheck
+	cvs +designer +git +glsl:glsleditor +help ios +lsp:languageclient mercurial +modeling:modeleditor
+	+nim perforce +python:pythoneditor qbs:qbsprojectmanager qnx +scxml:scxmleditor +serialterminal
+	+silversearcher subversion +valgrind winrt)
 IUSE="doc systemd test +webengine ${QTC_PLUGINS[@]%:*}"
 
 # minimum Qt version required
@@ -50,7 +50,7 @@ CDEPEND="
 	>=dev-qt/qtwidgets-${QT_PV}
 	>=dev-qt/qtx11extras-${QT_PV}
 	>=dev-qt/qtxml-${QT_PV}
-	clang? ( >=sys-devel/clang-6:= )
+	clang? ( >=sys-devel/clang-7:= )
 	designer? ( >=dev-qt/designer-${QT_PV} )
 	help? (
 		>=dev-qt/qthelp-${QT_PV}
