@@ -75,7 +75,7 @@ src_compile() {
 
 src_install() {
 	cmake-utils_src_install
-	dodoc AUTHORS ChangeLog
+	dodoc AUTHORS
 	if use doc ; then
 		dohtml doc/html/*
 	fi
