@@ -3,9 +3,7 @@
 
 EAPI=6
 
-inherit flag-o-matic
-inherit user
-inherit git-r3
+inherit flag-o-matic user git-r3 systemd desktop
 
 DESCRIPTION="Gridcoin Proof-of-Stake based crypto-currency that rewards BOINC computation"
 HOMEPAGE="https://gridcoin.us/"
@@ -64,6 +62,7 @@ src_prepare() {
 		ewarn "and set your desired FEATURES before (re-)building this package."
 	fi
 	eapply_user
+	eapply "${FILESDIR}"/${PN}-9999-desktop.patch
 	./autogen.sh
 }
 
@@ -86,18 +85,21 @@ src_configure() {
 		$(use_enable test tests)
 }
 
-src_compile() {
-	emake
-}
-
 src_install() {
 	if use daemon ; then
 		newbin src/gridcoinresearchd gridcoinresearchd-testnet
 		newman doc/gridcoinresearchd.1 gridcoinresearchd-testnet.1
+		newinitd "${FILESDIR}"/gridcoin.init gridcoin-testnet
+		systemd_newunit "${FILESDIR}"/gridcoin.service gridcoin-testnet.service
 	fi
 	if use qt5 ; then
 		newbin src/qt/gridcoinresearch gridcoinresearch-testnet
 		newman doc/gridcoinresearch.1 gridcoinresearch-testnet.1
+		newmenu contrib/gridcoinresearch.desktop gridcoinresearch-testnet.desktop
+		for size in 16 22 24 32 48 64 128 256 ; do
+			newicon -s "${size}" "share/icons/hicolor/${size}x${size}/apps/gridcoinresearch.png" gridcoinresearch-testnet.png
+		done
+		newicon -s scalable share/icons/hicolor/scalable/apps/gridcoinresearch.svg gridcoinresearch-testnet.svg
 	fi
 	dodoc README.md CHANGELOG.md doc/build-unix.md
 

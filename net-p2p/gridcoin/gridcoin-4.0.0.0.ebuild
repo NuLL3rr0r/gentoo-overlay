@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit flag-o-matic qmake-utils user git-r3 systemd
+inherit flag-o-matic user git-r3 systemd desktop
 
 DESCRIPTION="Gridcoin Proof-of-Stake based crypto-currency that rewards BOINC computation"
 HOMEPAGE="https://gridcoin.us/"
@@ -94,6 +94,11 @@ src_install() {
 	if use qt5 ; then
 		newbin src/qt/gridcoinresearch gridcoinresearch
 		newman doc/gridcoinresearch.1 gridcoinresearch.1
+		domenu contrib/gridcoinresearch.desktop
+		for size in 16 22 24 32 48 64 128 256 ; do
+			doicon -s "${size}" "share/icons/hicolor/${size}x${size}/apps/gridcoinresearch.png"
+		done
+		doicon -s scalable "share/icons/hicolor/scalable/apps/gridcoinresearch.svg"
 	fi
 	dodoc README.md CHANGELOG.md doc/build-unix.md
 
