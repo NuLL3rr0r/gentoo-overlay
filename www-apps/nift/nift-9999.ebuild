@@ -6,7 +6,7 @@ EAPI=6
 inherit git-r3 user
 
 DESCRIPTION="A cross-platform open source website generator"
-HOMEPAGE="https://www.nift.cc/"
+HOMEPAGE="https://www.nift.cc"
 EGIT_REPO_URI="https://github.com/nifty-site-manager/nsm.git"
 EGIT_BRANCH="master"
 
