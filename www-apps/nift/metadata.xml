@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/nifty-site-manager/nsm/issues</bugs-to>
+        <doc>https://www.nift.cc/docs/installing_nift.html</doc>
+        <remote-id type="github">nifty-site-manager/nsm</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Nift is a cross-platform open source framework for managing and
+        generating websites. It's lightning fast (evidence), developed from the
+        ground up in C++.
+    </longdescription>
+</pkgmetadata>
