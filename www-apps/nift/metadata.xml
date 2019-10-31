@@ -11,8 +11,8 @@
         <remote-id type="github">nifty-site-manager/nsm</remote-id>
     </upstream>
     <longdescription lang="en">
-        Nift (aka nsm) is a cross-platform open source framework for managing
-        and generating websites. It's lightning fast (evidence), developed from
-        the ground up in C++.
+        Nift (aka nsm) is a cross-platform open-source framework for managing
+        and generating websites. It's lightning-fast, developed from the ground
+        up in C++.
     </longdescription>
 </pkgmetadata>
