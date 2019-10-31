@@ -261,14 +261,14 @@ src_compile() {
 		-X "${EGO_PN}/common/hugo.buildDate=$(date -u '+%FT%T%z')"
 	)
 	local mygoargs=(
-		-v -work -x
+		-v -work -x -mod vendor
 		-buildmode "$(usex pie pie exe)"
 		-asmflags "all=-trimpath=${S}"
 		-gcflags "all=-trimpath=${S}"
 		-ldflags "${myldflags[*]}"
 		-tags "$(usex sass 'extended' 'none')"
 	)
-	#GO111MODULE=on GOPROXY=direct GOSUMDB=off go build "${mygoargs[@]}" || die
+
 	go build "${mygoargs[@]}" || die
 
 	./hugo gen man --dir="${T}"/man || die
