@@ -12,7 +12,7 @@ EGIT_BRANCH="master"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS=""
 #IUSE="gedit-highlighting"
 IUSE=""
 
