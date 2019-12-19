@@ -22,9 +22,7 @@ S="${WORKDIR}"
 DOCS="CHANGELOG.md CONDUCT.md CONTRIBUTING.md LICENSE README.md"
 
 src_compile() {
-	cd "${WORKDIR}"
-	cc -std=gnu11 -w -o v "${DISTDIR}"/v.c
-	./v -o v compiler
+	emake
 }
 
 src_install() {
