@@ -14,7 +14,7 @@ SRC_URI="https://github.com/emweb/wt/archive/${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="+c++11 +cmake-module doc examples ext fcgi fcgi-lighthttpd fcgi-nginx firebird +haru libwttest mysql no-std-locale no-std-wstring +opengl +pango postgres +resources sqlite3 +ssl tests unwind wtdbo +wthttp"
+IUSE="+c++11 +cmake-module doc examples ext fcgi fcgi-lighthttpd fcgi-nginx firebird +haru libwttest mysql no-std-locale no-std-wstring +opengl +pango postgres qt5 +resources sqlite3 +ssl tests unwind wtdbo +wthttp"
 REQUIRED_USE="
 	examples? ( sqlite3 wthttp )
 	fcgi? ( ^^ ( fcgi-lighthttpd fcgi-nginx ) )
@@ -41,6 +41,7 @@ RDEPEND="
 		x11-libs/pango
 	)
 	postgres? ( dev-db/postgresql )
+	qt5? ( dev-qt/qtcore:5 )
 	sqlite3? ( >=dev-db/sqlite-3.0.0 )
 	ssl? ( dev-libs/openssl:0= )
 	unwind? ( sys-libs/libunwind )
@@ -100,6 +101,7 @@ src_configure() {
 		-DENABLE_PANGO:BOOL=$(usex pango)
 		-DENABLE_POSTGRES:BOOL=$(usex postgres)
 		-DENABLE_QT4:BOOL=OFF
+		-DENABLE_QT5:BOOL=$(usex qt5)
 		-DENABLE_SQLITE:BOOL=$(usex sqlite3)
 		-DENABLE_SSL:BOOL=$(usex ssl)
 		-DENABLE_UNWIND:BOOL=$(usex unwind)
