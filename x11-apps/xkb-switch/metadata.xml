@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/ierton/xkb-switch/issues</bugs-to>
+        <remote-id type="github">ierton/xkb-switch</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        xkb-switch is a C++ program that allows to query and change the XKB layout state. Originally ruby-based code written by J.Broomley.
+    </longdescription>
+</pkgmetadata>
