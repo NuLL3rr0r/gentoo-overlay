@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/notpushkin/Mailspring-Libre/issues</bugs-to>
+        <changelog>https://github.com/notpushkin/Mailspring-Libre/blob/master/CHANGELOG.md</changelog>
+        <doc>https://github.com/notpushkin/Mailspring-Libre/blob/master/README.md</doc>
+        <remote-id type="github">notpushkin/Mailspring-Libre</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        A fork of a fork – aiming at removing Mailspring's dependecy on a central server
+    </longdescription>
+</pkgmetadata>

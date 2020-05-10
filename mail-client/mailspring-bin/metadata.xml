@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/Foundry376/Mailspring/issues</bugs-to>
+        <changelog>https://github.com/Foundry376/Mailspring/blob/master/CHANGELOG.md</changelog>
+        <doc>https://github.com/Foundry376/Mailspring/blob/master/README.md</doc>
+        <remote-id type="github">notpushkin/Mailspring-Libre</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        The best email app for people and teams at work
+    </longdescription>
+</pkgmetadata>
