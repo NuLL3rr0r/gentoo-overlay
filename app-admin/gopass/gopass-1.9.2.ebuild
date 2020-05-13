@@ -4,12 +4,13 @@
 EAPI=7
 
 # Change this when you update the ebuild
-GIT_COMMIT="844266aaaef9e8e518516c27c975fec00a7748ae"
+GIT_COMMIT="e2d1549f452a0df1fc52e42e7d0f654334d7144e"
 EGO_PN="github.com/gopasspw/${PN}"
 EGO_VENDOR=(
 	# Note: Keep EGO_VENDOR in sync with `GO111MODULE=on go list -m all`
 	"github.com/BurntSushi/toml v0.3.1"
 	"github.com/DATA-DOG/go-sqlmock v1.3.3"
+	"github.com/ProtonMail/go-appdir v1.1.0"
 	"github.com/alecthomas/binary fb1b1d9c299c"
 	"github.com/atotto/clipboard v0.1.2"
 	"github.com/blang/semver 1a9109f8c4a1"
@@ -28,7 +29,6 @@ EGO_VENDOR=(
 	"github.com/golang/protobuf v1.4.0"
 	"github.com/google/go-cmp v0.4.0"
 	"github.com/google/go-github v17.0.0"
-	"github.com/google/go-github/v31 v31.0.0 github.com/google/go-github"
 	"github.com/google/go-querystring v1.0.0"
 	"github.com/hashicorp/errwrap v1.0.0"
 	"github.com/hashicorp/go-multierror v1.1.0"
@@ -59,12 +59,10 @@ EGO_VENDOR=(
 	"github.com/xrash/smetrics a3153f7040e9"
 	"golang.org/x/crypto 4bdfaf469ed5 github.com/golang/crypto"
 	"golang.org/x/net e086a090c8fd github.com/golang/net"
-	"golang.org/x/oauth2 d2e6202438be github.com/golang/oauth2"
 	"golang.org/x/sys 1957bb5e6d1f github.com/golang/sys"
 	"golang.org/x/text v0.3.2 github.com/golang/text"
 	"golang.org/x/tools 90fa682c2a6e github.com/golang/tools"
 	"golang.org/x/xerrors 9bdfabe68543 github.com/golang/xerrors"
-	"google.golang.org/appengine v1.1.0 github.com/golang/appengine"
 	"google.golang.org/protobuf v1.21.0 github.com/protocolbuffers/protobuf-go"
 	"gopkg.in/check.v1 8fa46927fb4f github.com/go-check/check"
 	"gopkg.in/yaml.v2 v2.2.8 github.com/go-yaml/yaml"
