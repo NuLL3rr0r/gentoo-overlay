@@ -4,7 +4,7 @@
 EAPI=7
 
 # Change this when you update the ebuild
-GIT_COMMIT="06150c87be19d63665747608ea14c3442f18ea13"
+GIT_COMMIT="a301f6b2ae47359c04ef67e0dd810c5927e89182"
 EGO_PN="github.com/gohugoio/hugo"
 EGO_VENDOR=(
 	# Note: Keep EGO_VENDOR in sync with `GO111MODULE=on go list -m all`
