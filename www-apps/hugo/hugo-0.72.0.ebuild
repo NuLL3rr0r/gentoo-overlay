@@ -200,7 +200,7 @@ EGO_VENDOR=(
 	"github.com/xdg/stringprep v1.0.0"
 	"github.com/xiang90/probing 43a291ad63a2"
 	"github.com/xordataexchange/crypt b2862e3d0a77"
-	"github.com/yuin/goldmark v1.1.30"
+	"github.com/yuin/goldmark v1.1.31"
 	"github.com/yuin/goldmark-highlighting 60d527fdb691"
 	"go.etcd.io/bbolt v1.3.2 github.com/etcd-io/bbolt"
 	"go.mongodb.org/mongo-driver v1.0.1 github.com/mongodb/mongo-go-driver"
