@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/reorg/pg_repack/issues</bugs-to>
+        <doc>https://reorg.github.io/pg_repack/</doc>
+        <remote-id type="github">reorg/pg_repack</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Reorganize tables in PostgreSQL databases with minimal locks
+    </longdescription>
+</pkgmetadata>
