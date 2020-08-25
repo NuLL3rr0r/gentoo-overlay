@@ -4,7 +4,7 @@
 EAPI=7
 
 # Change this when you update the ebuild
-GIT_COMMIT="e2d1549f452a0df1fc52e42e7d0f654334d7144e"
+GIT_COMMIT="0ffa13994b857780555c95dde12b4fdb592b7da9"
 EGO_PN="github.com/gopasspw/${PN}"
 EGO_VENDOR=(
 	# Note: Keep EGO_VENDOR in sync with `GO111MODULE=on go list -m all`
@@ -144,11 +144,23 @@ src_compile() {
 		-ldflags "${myldflags[*]}"
 	)
 	go build "${mygoargs[@]}" || die
+	cd "${S}/cmd/gopass-git-credentials" && go build -o gopass-git-credentials "${mygoargs[@]}" || die
+	cd "${S}/cmd/gopass-hibp" && go build -o gopass-hibp "${mygoargs[@]}" || die
+	cd "${S}/cmd/gopass-jsonapi" && go build -o gopass-jsonapi "${mygoargs[@]}" || die
+	cd "${S}/cmd/gopass-summon-provider" && go build -o gopass-summon-provider "${mygoargs[@]}" || die
 }
 
 src_install() {
-	dobin gopass
-	use debug && dostrip -x /usr/bin/gopass
+	dobin gopass \
+		"${S}/cmd/gopass-git-credentials/gopass-git-credentials" \
+		"${S}/cmd/gopass-hibp/gopass-hibp" \
+		"${S}/cmd/gopass-jsonapi/gopass-jsonapi" \
+		"${S}/cmd/gopass-summon-provider/gopass-summon-provider"
+	use debug && dostrip -x /usr/bin/gopass \
+		&& dostrip -x /usr/bin/gopass-git-credentials \
+		&& dostrip -x /usr/bin/gopass-hibp \
+		&& dostrip -x /usr/bin/gopass-jsonapi \
+		&& dostrip -x /usr/bin/gopass-summon-provider
 	einstalldocs
 
 	./gopass completion bash > gopass.bash || die
