@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -8,11 +8,11 @@ inherit flag-o-matic user git-r3 systemd desktop
 DESCRIPTION="Gridcoin Proof-of-Stake based crypto-currency that rewards BOINC computation"
 HOMEPAGE="https://gridcoin.us/"
 EGIT_REPO_URI="https://github.com/gridcoin/Gridcoin-Research.git"
-EGIT_BRANCH="staging"
+EGIT_COMMIT="${PV}"
 
 LICENSE="MIT"
-SLOT="9999"
-KEYWORDS=""
+SLOT="0"
+KEYWORDS="~amd64 ~x86"
 
 IUSE_GUI="qt5 dbus"
 IUSE_DAEMON="daemon"
@@ -21,8 +21,8 @@ IUSE="${IUSE_GUI} ${IUSE_DAEMON} ${IUSE_OPTIONAL}"
 
 REQUIRED_USE="|| ( daemon qt5 ) dbus? ( qt5 ) qrcode? ( qt5 )"
 
-RDEPEND=">=dev-libs/boost-1.55.0
-	>=dev-libs/openssl-1.0.1g:=
+RDEPEND=">=dev-libs/boost-1.73.0
+	>=dev-libs/openssl-1.1.1d:=
 	>=dev-libs/libzip-1.3.0
 	dev-libs/libevent
 	sys-libs/db:5.3[cxx]
@@ -62,7 +62,6 @@ src_prepare() {
 		ewarn "and set your desired FEATURES before (re-)building this package."
 	fi
 	eapply_user
-	eapply "${FILESDIR}"/${PN}-9999-desktop.patch
 	./autogen.sh
 }
 
@@ -77,7 +76,7 @@ src_configure() {
 		$(use_with pic) \
 		$(use_with libraries libs) \
 		$(use_with utils) \
-		$(use_enable harden hardening ) \
+		$(use_enable harden hardening) \
 		$(use_enable bench) \
 		$(use_enable ccache ) \
 		$(use_enable static) \
@@ -87,46 +86,41 @@ src_configure() {
 
 src_install() {
 	if use daemon ; then
-		newbin src/gridcoinresearchd gridcoinresearchd-testnet
-		newman doc/gridcoinresearchd.1 gridcoinresearchd-testnet.1
-		newinitd "${FILESDIR}"/gridcoin.init gridcoin-testnet
-		systemd_newunit "${FILESDIR}"/gridcoin.service gridcoin-testnet.service
+		newbin src/gridcoinresearchd gridcoinresearchd
+		newman doc/gridcoinresearchd.1 gridcoinresearchd.1
+		newinitd "${FILESDIR}"/gridcoin.init gridcoin
+		systemd_dounit "${FILESDIR}"/gridcoin.service
 	fi
 	if use qt5 ; then
-		newbin src/qt/gridcoinresearch gridcoinresearch-testnet
-		newman doc/gridcoinresearch.1 gridcoinresearch-testnet.1
-		newmenu contrib/gridcoinresearch.desktop gridcoinresearch-testnet.desktop
+		newbin src/qt/gridcoinresearch gridcoinresearch
+		newman doc/gridcoinresearch.1 gridcoinresearch.1
+		domenu contrib/gridcoinresearch.desktop
 		for size in 16 22 24 32 48 64 128 256 ; do
-			newicon -s "${size}" "share/icons/hicolor/${size}x${size}/apps/gridcoinresearch.png" gridcoinresearch-testnet.png
+			doicon -s "${size}" "share/icons/hicolor/${size}x${size}/apps/gridcoinresearch.png"
 		done
-		newicon -s scalable share/icons/hicolor/scalable/apps/gridcoinresearch.svg gridcoinresearch-testnet.svg
+		doicon -s scalable "share/icons/hicolor/scalable/apps/gridcoinresearch.svg"
 	fi
 	dodoc README.md CHANGELOG.md doc/build-unix.md
 
 	diropts -o${PN} -g${PN}
-	keepdir /var/lib/${PN}/.GridcoinResearch/testnet/
-	newconfd "${FILESDIR}"/gridcoinresearch-testnet.conf gridcoinresearch-testnet
-	fowners gridcoin:gridcoin /etc/conf.d/gridcoinresearch-testnet
-	fperms 0660 /etc/conf.d/gridcoinresearch-testnet
-	dosym ../../../../../etc/conf.d/gridcoinresearch-testnet /var/lib/${PN}/.GridcoinResearch/testnet/gridcoinresearch.conf
+	keepdir /var/lib/${PN}/.GridcoinResearch/
+	newconfd "${FILESDIR}"/gridcoinresearch.conf gridcoinresearch
+	fowners gridcoin:gridcoin /etc/conf.d/gridcoinresearch
+	fperms 0660 /etc/conf.d/gridcoinresearch
+	dosym ../../../../../etc/conf.d/gridcoinresearch /var/lib/${PN}/.GridcoinResearch/gridcoinresearch.conf
 }
 
 pkg_postinst() {
 	elog
-	elog "You are using a source compiled version of the gridcoin development branch."
-	ewarn "NB: This branch is only intended for debugging on the gridcoin testnet!"
-	ewarn "    Only proceed if you know what you are doing."
-	ewarn "    Testnet users must join Slack at https://teamgridcoin.slack.com #testnet"
-	ewarn "    To request an invitation, ask in irc://chat.freenode.net/#gridcoin-testnet"
+	elog "You are using a source compiled version of gridcoin."
+	elog "The daemon can be found at /usr/bin/gridcoinresearchd"
+	use qt5 && elog "The graphical wallet can be found at /usr/bin/gridcoinresearch"
 	elog
-	use daemon && elog "The daemon can be found at /usr/bin/gridcoinresearchd-testnet"
-	use qt5 && elog "The graphical wallet can be found at /usr/bin/gridcoinresearch-testnet"
-	ewarn "Remember to run with the '-testnet' option."
-	elog
-	elog "You need to configure this node with a few basic details to do anything useful with gridcoin."
-	elog "You can do this by editing /var/lib/${PN}/.GridcoinResearch/testnet/gridcoinresearch.conf"
-	elog "The howto for this configuration file is located at:"
-	elog "http://wiki.gridcoin.us/Gridcoinresearch_config_file"
+	elog "You need to configure this node with a few basic details to do anything"
+	elog "useful with gridcoin. The wallet configuration file is located at:"
+	elog "    /etc/conf.d/gridcoinresearch"
+	elog "The wiki for this configuration file is located at:"
+	elog "    http://wiki.gridcoin.us/Gridcoinresearch_config_file"
 	elog
 	if use boinc ; then
 		elog "To run your wallet as a researcher you should add gridcoin user to boinc group."
