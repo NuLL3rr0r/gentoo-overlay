@@ -1,16 +1,17 @@
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit eapi7-ver eutils readme.gentoo-r1 gnome2-utils pam systemd xdg-utils
+PYTHON_COMPAT=( python3_{6,7,8,9} )
+inherit eutils readme.gentoo-r1 gnome2-utils pam python-any-r1 systemd xdg-utils
 
 MY_PN="VMware-Workstation-Full"
 MY_PV=$(ver_cut 1-3)
 PV_MODULES="${MY_PV}"
 PV_BUILD=$(ver_cut 4)
 MY_P="${MY_PN}-${MY_PV}-${PV_BUILD}"
-VMWARE_FUSION_VER="11.5.2/15794494" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
+VMWARE_FUSION_VER="11.5.5/16269456" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
 SYSTEMD_UNITS_TAG="gentoo-02"
 UNLOCKER_VERSION="3.0.3"
 
@@ -79,7 +80,7 @@ RDEPEND="
 	!app-emulation/vmware-tools
 "
 DEPEND="
-	dev-lang/python:2.7
+	${PYTHON_DEPS}
 	>=dev-util/patchelf-0.9
 	modules? ( ~app-emulation/vmware-modules-${PV_MODULES} )
 	ovftool? ( app-admin/chrpath )
@@ -296,7 +297,7 @@ src_install() {
 		doins -r *
 
 		chmod 0755 "${ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/{ovftool,ovftool.bin}
-		dosym "${ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/ovftool "${VM_INSTALL_DIR}"/bin/ovftool
+		dosym ../../lib/vmware-ovftool/ovftool "${VM_INSTALL_DIR}"/bin/ovftool
 
 		cd - >/dev/null
 	fi
@@ -496,7 +497,7 @@ src_install() {
 
 	# enable macOS guests support
 	if use macos-guests; then
-		python2 "${WORKDIR}"/unlocker-*/unlocker.py >/dev/null || die "unlocker.py failed"
+		python3 "${WORKDIR}"/unlocker-*/unlocker.py >/dev/null || die "unlocker.py failed"
 	fi
 
 	# VMware tools
