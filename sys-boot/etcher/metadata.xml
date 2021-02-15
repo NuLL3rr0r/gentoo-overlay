@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/balena-io/etcher/issues</bugs-to>
+        <changelog>https://github.com/balena-io/etcher/blob/master/CHANGELOG.md</changelog>
+        <doc>https://github.com/balena-io/etcher/blob/master/docs/USER-DOCUMENTATION.md</doc>
+        <remote-id type="github">balena-io/etcher</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Etcher is a powerful OS image flasher built with web technologies to
+        ensure flashing an SDCard or USB drive is a pleasant and safe
+        experience. It protects you from accidentally writing to your
+        hard-drives, ensures every byte of data was written correctly and much
+        more. It can also flash directly Raspberry Pi devices that support the
+        usbboot protocol
+    </longdescription>
+</pkgmetadata>
