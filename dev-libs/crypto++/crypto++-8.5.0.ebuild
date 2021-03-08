@@ -11,11 +11,18 @@ SRC_URI="https://www.cryptopp.com/cryptopp${PV//.}.zip"
 S="${WORKDIR}"
 
 LICENSE="Boost-1.0"
-SLOT="0/8" # subslot is so version
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ppc ~ppc64 ~sparc ~x86 ~x64-macos"
+# Bumped to 8.5 in 8.5.0 out of caution
+# subslot is so version (was broken in 8.3.0, check on bumps!)
+SLOT="0/8.5"
+# No keywords for testing
+#KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~sparc ~x86 ~x64-macos"
 IUSE="+asm static-libs"
 
 BDEPEND="app-arch/unzip"
+
+PATCHES=(
+	"${FILESDIR}/${PN}-8.2.0-musl-ldconfig.patch"
+)
 
 config_uncomment() {
 	sed -i -e "s://\s*\(#define\s*$1\):\1:" config.h || die
