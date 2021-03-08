@@ -21,6 +21,10 @@ BDEPEND=""
 
 S="${WORKDIR}/nsm-${PV}"
 
+PATCHES=(
+	"${FILESDIR}/${P}.patch"
+)
+
 src_compile() {
 	emake all
 }
