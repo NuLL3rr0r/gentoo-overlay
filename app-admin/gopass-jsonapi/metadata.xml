@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/gopasspw/gopass-jsonapi/issues</bugs-to>
+        <changelog>https://github.com/gopasspw/gopass-jsonapi/blob/master/CHANGELOG.md</changelog>
+        <doc>https://github.com/gopasspw/gopass-jsonapi/blob/main/docs/api.md</doc>
+        <remote-id type="github">gopasspw/gopass-jsonapi</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        gopass-jsonapi enables communication with gopass via JSON messages.
+    </longdescription>
+</pkgmetadata>

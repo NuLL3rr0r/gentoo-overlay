@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/gopasspw/gopass-summon-provider/issues</bugs-to>
+        <changelog>https://github.com/gopasspw/gopass-summon-provider/blob/master/CHANGELOG.md</changelog>
+        <remote-id type="github">gopasspw/gopass-summon-provider</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Summon is a command-line tool to inject secrets as environment variables. It is used to execute a process and inject secrets from a separate store. Using gopass can be useful in (local) development
+    </longdescription>
+</pkgmetadata>

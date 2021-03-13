@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/gopasspw/git-credential-gopass/issues</bugs-to>
+        <changelog>https://github.com/gopasspw/git-credential-gopass/blob/master/CHANGELOG.md</changelog>
+        <remote-id type="github">gopasspw/git-credential-gopass</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Gopass git-credentials helper
+    </longdescription>
+</pkgmetadata>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/gopasspw/gopass-hibp/issues</bugs-to>
+        <changelog>https://github.com/gopasspw/gopass-hibp/blob/master/CHANGELOG.md</changelog>
+        <remote-id type="github">gopasspw/gopass-hibp</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Gopass haveibeenpwnd.com integration
+    </longdescription>
+</pkgmetadata>
