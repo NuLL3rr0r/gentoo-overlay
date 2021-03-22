@@ -1,0 +1,26 @@
+diff --git a/pommed/mactel/nv8600mgt_backlight.c b/pommed/mactel/nv8600mgt_backlight.c
+index 4d1884f..db25988 100644
+--- a/pommed/mactel/nv8600mgt_backlight.c
++++ b/pommed/mactel/nv8600mgt_backlight.c
+@@ -47,7 +47,7 @@
+ #include "../lcd_backlight.h"
+ 
+ 
+-struct _lcd_bck_info lcd_bck_info;
++extern struct _lcd_bck_info lcd_bck_info;
+ 
+ 
+ static int nv8600mgt_inited = 0;
+diff --git a/pommed/mactel/x1600_backlight.c b/pommed/mactel/x1600_backlight.c
+index 6102880..bab8813 100644
+--- a/pommed/mactel/x1600_backlight.c
++++ b/pommed/mactel/x1600_backlight.c
+@@ -44,7 +44,7 @@
+ #include "../lcd_backlight.h"
+ 
+ 
+-struct _lcd_bck_info lcd_bck_info;
++extern struct _lcd_bck_info lcd_bck_info;
+ 
+ static int fd = -1;
+ static char *memory = NULL;

@@ -1,0 +1,37 @@
+diff --git a/pommed/Makefile b/pommed/Makefile
+index 8867042..928d0c9 100644
+--- a/pommed/Makefile
++++ b/pommed/Makefile
+@@ -1,7 +1,5 @@
+ ARCH ?= $(shell uname -m)
+ 
+-CC = gcc
+-
+ ALSA_CFLAGS = $(shell pkg-config alsa --cflags)
+ ALSA_LIBS = $(shell pkg-config alsa --libs)
+ 
+@@ -11,7 +9,7 @@ AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
+ CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
+ CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
+ 
+-CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(EXTRA_CFLAGS)
++CFLAGS += -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(INOTIFY_CFLAGS) $(TIMERFD_CFLAGS)
+ 
+ LDLIBS = -pthread -lrt $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
+ 
+@@ -47,6 +45,7 @@ ifeq ($(LIBPCI_SHARED), true)
+ 
+ 	CFLAGS += $(LIBPCI_CFLAGS)
+ 	LDLIBS += $(LIBPCI_LIBS)
++	LIBS = $(LIBPCI_LIBS)
+ else
+ 	LIB_OBJS += /usr/lib/libpci.a
+ endif
+@@ -66,6 +65,7 @@ OBJS = $(SOURCES:%.c=%.o)
+ 
+ 
+ pommed: $(OBJS) $(LIB_OBJS)
++	${CC} -o $@ ${OBJS} ${LDLIBS} ${LDFLAGS}
+ 
+ pommed.o: pommed.c pommed.h evloop.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h beep.h
+ 
