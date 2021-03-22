@@ -3,22 +3,23 @@
 
 EAPI=6
 
-inherit git-r3 user
+inherit user
 
 DESCRIPTION="A cross-platform open source website generator"
 HOMEPAGE="https://www.nift.cc"
-EGIT_REPO_URI="https://github.com/nifty-site-manager/nsm.git"
-EGIT_BRANCH="master"
+SRC_URI="https://github.com/nifty-site-manager/nsm/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="~amd64 ~x86"
 #IUSE="gedit-highlighting"
 IUSE=""
 
 DEPEND=""
 RDEPEND="${DEPEND}"
 BDEPEND=""
+
+S="${WORKDIR}/nsm-${PV}"
 
 PATCHES=(
 	"${FILESDIR}/${P}.patch"
