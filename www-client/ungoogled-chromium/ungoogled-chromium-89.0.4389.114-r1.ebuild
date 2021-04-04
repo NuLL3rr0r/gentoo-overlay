@@ -14,7 +14,7 @@ inherit check-reqs chromium-2 desktop flag-o-matic multilib ninja-utils pax-util
 UGC_PVR="${PVR/r}"
 UGC_PF="${PN}-${UGC_PVR}"
 UGC_URL="https://github.com/Eloston/${PN}/archive/"
-#UGC_COMMIT_ID="64cbcbcfee33fd56760173b3a17d2de52cd77258"
+#UGC_COMMIT_ID="261409122c476633f98a283dddbf6239da0ff749"
 
 if [ -z "$UGC_COMMIT_ID" ]
 then
@@ -247,13 +247,6 @@ pkg_pretend() {
 		ewarn "A patch to make vaapi compatible with system libvpx-1.9 is welcome"
 		ewarn
 		[[ -z "${NODIE}" ]] && die "The build will fail!"
-	fi
-	if use pgo; then
-		ewarn
-		ewarn "PGO is known to fail with llvm-11, see #80"
-		ewarn "Consider disabling this USE flag if compilation breaks"
-		ewarn "If it succeeds, please let me know your llvm version in the bug mentioned"
-		ewarn
 	fi
 	pre_build_checks
 }
