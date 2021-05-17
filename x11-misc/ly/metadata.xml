@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/nullgemm/ly/issues</bugs-to>
+        <remote-id type="github">nullgemm/ly</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        A lightweight TUI (ncurses-like) display manager for Linux and BSD.
+    </longdescription>
+</pkgmetadata>
