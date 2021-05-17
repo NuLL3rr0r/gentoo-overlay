@@ -48,5 +48,5 @@ index 0000000..f389038
 +		# util-linux
 +	fi
 +
-+	exec setsid ${GETTY} -nl /usr/bin/ly tty1 "${BAUD_RATE}" "${TERM_NAME}"
++	exec setsid ${GETTY} -nl ${command} tty2 "${BAUD_RATE}" "${TERM_NAME}"
 +}
