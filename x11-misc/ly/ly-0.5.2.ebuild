@@ -22,6 +22,10 @@ DEPEND="sys-libs/pam
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
+PATCHES=(
+	"${FILESDIR}/gentoo.patch"
+)
+
 src_unpack() {
 	git-r3_src_unpack
 	for _i in argoat configator ctypes dragonfail termbox_next; do

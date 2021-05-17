@@ -1,0 +1,52 @@
+diff --git a/makefile b/makefile
+index eef31ad..36b7fec 100644
+--- a/makefile
++++ b/makefile
+@@ -78,7 +78,7 @@ install: $(BIND)/$(NAME)
+ 	@install -DZ $(RESD)/wsetup.sh -t $(DATADIR)
+ 	@install -dZ $(DATADIR)/lang
+ 	@install -DZ $(RESD)/lang/* -t $(DATADIR)/lang
+-	@install -DZ $(RESD)/ly.service -m 644 -t ${DESTDIR}/usr/lib/systemd/system
++	@install -DZ $(RESD)/ly -m 755 -t ${DESTDIR}/etc/init.d/
+ 	@install -DZ $(RESD)/pam.d/ly -m 644 -t ${DESTDIR}/etc/pam.d
+ 
+ installnoconf: $(BIND)/$(NAME)
+@@ -89,7 +89,7 @@ installnoconf: $(BIND)/$(NAME)
+ 	@install -DZ $(RESD)/wsetup.sh -t $(DATADIR)
+ 	@install -dZ $(DATADIR)/lang
+ 	@install -DZ $(RESD)/lang/* -t $(DATADIR)/lang
+-	@install -DZ $(RESD)/ly.service -m 644 -t ${DESTDIR}/usr/lib/systemd/system
++	@install -DZ $(RESD)/ly -m 755 -t /etc/init.d/
+ 	@install -DZ $(RESD)/pam.d/ly -m 644 -t ${DESTDIR}/etc/pam.d
+ 
+ uninstall:
+diff --git a/res/ly b/res/ly
+new file mode 100644
+index 0000000..f389038
+--- /dev/null
++++ b/res/ly
+@@ -0,0 +1,24 @@
++#!/sbin/openrc-run
++
++command=/usr/bin/ly
++
++name="ly"
++description="TUI display manager"
++
++
++depend() {
++	after agetty
++}
++start() {
++	TERM_NAME=linux
++	BAUD_RATE=38400
++	if [ -x /sbin/getty -o -x /bin/getty ];then
++		GETTY=getty
++		# busybox
++	elif [ -x /sbin/agetty -o -x /bin/agetty ];then
++		GETTY=agetty
++		# util-linux
++	fi
++
++	exec setsid ${GETTY} -nl /usr/bin/ly tty1 "${BAUD_RATE}" "${TERM_NAME}"
++}
