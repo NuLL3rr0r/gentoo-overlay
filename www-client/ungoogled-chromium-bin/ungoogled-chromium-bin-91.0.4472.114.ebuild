@@ -27,8 +27,8 @@ SRC_URI="
 		)
 	)
 	haswell? (
-		https://github.com/PF4Public/${PN}/releases/download/${PV}/haswell.tar.xz
-		-> ${P}-haswell.tar.xz
+		https://github.com/PF4Public/${PN}/releases/download/${PV}/haswell.tar.bz2
+		-> ${P}-haswell.tar.bz2
 	)
 "
 
@@ -94,7 +94,7 @@ CDEPEND="
 	media-libs/opus
 	media-libs/freetype
 	media-libs/harfbuzz:0[icu(-)]
-	=dev-libs/icu-68*:0
+	=dev-libs/icu-69*:0
 	dev-libs/jsoncpp
 	dev-libs/libevent
 	media-libs/libvpx:0/6[postproc]
