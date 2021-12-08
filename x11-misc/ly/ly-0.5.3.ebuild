@@ -28,7 +28,7 @@ PATCHES=(
 
 src_unpack() {
 	git-r3_src_unpack
-	for _i in argoat configator ctypes dragonfail termbox_next; do
+	for _i in argoat configator dragonfail termbox_next; do
 		EGIT_REPO_URI="${HOMEPAGE%ly}${_i}.git"
 		EGIT_COMMIT=""
 		EGIT_CHECKOUT_DIR="${WORKDIR}/${P}/sub/${_i}"
