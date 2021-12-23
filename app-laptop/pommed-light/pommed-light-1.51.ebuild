@@ -25,7 +25,7 @@ DEPEND="
 	x86? ( sys-apps/pciutils )"
 RDEPEND="${DEPEND}
 	media-sound/alsa-utils
-	virtual/eject"
+	sys-apps/util-linux"
 BDEPEND="virtual/pkgconfig"
 
 PATCHES=(
