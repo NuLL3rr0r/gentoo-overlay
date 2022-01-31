@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -16,6 +16,10 @@ SRC_URI="
 		https://github.com/PF4Public/${PN}/releases/download/${PV}/core2.tar.bz2
 		-> ${P}-core2.tar.bz2
 	)
+	haswell? (
+		https://github.com/PF4Public/${PN}/releases/download/${PV}/haswell.tar.bz2
+		-> ${P}-haswell.tar.bz2
+	)
 	generic? (
 		amd64? (
 		https://github.com/PF4Public/${PN}/releases/download/${PV}/x86-64.tar.bz2
@@ -25,10 +29,6 @@ SRC_URI="
 		https://github.com/PF4Public/${PN}/releases/download/${PV}/i686.tar.bz2
 		-> ${P}-i686.tar.bz2
 		)
-	)
-	haswell? (
-		https://github.com/PF4Public/${PN}/releases/download/${PV}/haswell.tar.bz2
-		-> ${P}-haswell.tar.bz2
 	)
 "
 
@@ -45,29 +45,6 @@ REQUIRED_USE="
 "
 
 CDEPEND="
-	>=app-accessibility/at-spi2-atk-2.26:2
-	app-arch/snappy
-	>=dev-libs/atk-2.26
-	dev-libs/expat
-	dev-libs/glib:2
-	>=dev-libs/libxml2-2.9.4-r3[icu]
-	dev-libs/libxslt
-	dev-libs/nspr
-	>=dev-libs/nss-3.26
-	>=dev-libs/re2-0.2018.10.01
-	>=media-libs/alsa-lib-1.0.19
-	media-libs/flac
-	media-libs/fontconfig
-	media-libs/libjpeg-turbo
-	media-libs/libpng
-	>=media-libs/libwebp-0.4.0
-	sys-apps/dbus
-	sys-apps/pciutils
-	sys-libs/zlib[minizip]
-	virtual/udev
-	x11-libs/cairo
-	x11-libs/gdk-pixbuf:2
-	x11-libs/gtk+:3[X]
 	x11-libs/libX11
 	x11-libs/libXcomposite
 	x11-libs/libXcursor
@@ -77,11 +54,22 @@ CDEPEND="
 	>=x11-libs/libXi-1.6.0
 	x11-libs/libXrandr
 	x11-libs/libXrender
-	x11-libs/libXScrnSaver
 	x11-libs/libXtst
-	x11-libs/pango
+	x11-libs/libxcb
+	x11-libs/libva:0/2
 	>=net-print/cups-1.3.11
-	media-libs/lcms
+	dev-libs/expat
+	dev-libs/glib:2
+	>=dev-libs/libxml2-2.9.4-r3[icu]
+	dev-libs/nspr
+	>=dev-libs/nss-3.26
+	>=media-libs/alsa-lib-1.0.19
+	media-libs/fontconfig
+	media-libs/freetype
+	>=media-libs/harfbuzz-3.1.1:0[icu(-)]
+	media-libs/libjpeg-turbo
+	media-libs/libpng
+	media-libs/libvpx:0/6[postproc]
 	|| (
 		media-sound/pulseaudio
 		>=media-sound/apulse-0.1.9
@@ -92,20 +80,32 @@ CDEPEND="
 		>=net-fs/samba-4.5.16[-debug(-)]
 	)
 	media-libs/opus
-	media-libs/freetype
-	media-libs/harfbuzz:0[icu(-)]
-	=dev-libs/icu-69*:0
-	dev-libs/jsoncpp
+	sys-apps/dbus
+	sys-apps/pciutils
+	virtual/udev
+	x11-libs/cairo
+	x11-libs/gdk-pixbuf:2
+	x11-libs/pango
+	media-libs/flac
+	>=media-libs/libwebp-0.4.0
+	sys-libs/zlib[minizip]
+	>=app-accessibility/at-spi2-atk-2.26:2
+	>=dev-libs/atk-2.26
+	x11-libs/gtk+:3[X]
+	media-libs/lcms
+	dev-libs/jsoncpp:0/25
 	dev-libs/libevent
-	media-libs/libvpx:0/6[postproc]
-	media-libs/openh264:0/6
 	media-libs/openjpeg:2/7
-	x11-libs/libva:0/2
+	app-arch/snappy
+	dev-libs/libxslt
+	dev-libs/re2
+	media-libs/openh264:0/6
+	=dev-libs/icu-69*:0
 "
 RDEPEND="${CDEPEND}
+	x11-misc/xdg-utils
 	virtual/opengl
 	virtual/ttf-fonts
-	x11-misc/xdg-utils
 	!www-client/chromium
 	!www-client/chromium-bin
 	!www-client/ungoogled-chromium

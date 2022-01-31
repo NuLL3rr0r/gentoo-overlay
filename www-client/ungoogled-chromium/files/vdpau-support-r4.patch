@@ -9,8 +9,8 @@
      if (!vpp_vaapi_wrapper_) {
        vpp_vaapi_wrapper_ = VaapiWrapper::Create(
            VaapiWrapper::kVideoProcess, VAProfileNone,
-@@ -1195,6 +1195,11 @@
-
+@@ -1209,6 +1209,11 @@
+ 
  VaapiVideoDecodeAccelerator::BufferAllocationMode
  VaapiVideoDecodeAccelerator::DecideBufferAllocationMode() {
 +  // NVIDIA blobs use VDPAU
@@ -18,9 +18,10 @@
 +    LOG(INFO) << "VA-API driver on VDPAU backend";
 +    return BufferAllocationMode::kWrapVdpau;
 +  }
- #if defined(USE_X11)
+ #if BUILDFLAG(USE_VAAPI_X11)
    // The IMPORT mode is used for Android on Chrome OS, so this doesn't apply
    // here.
+
 --- a/media/gpu/vaapi/vaapi_video_decode_accelerator.h
 +++ b/media/gpu/vaapi/vaapi_video_decode_accelerator.h
 @@ -204,6 +204,7 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
