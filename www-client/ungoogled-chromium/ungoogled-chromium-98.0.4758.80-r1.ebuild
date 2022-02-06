@@ -14,7 +14,7 @@ inherit check-reqs chromium-2 desktop flag-o-matic ninja-utils pax-utils python-
 UGC_PVR="${PVR/r}"
 UGC_PF="${PN}-${UGC_PVR}"
 UGC_URL="https://github.com/Eloston/${PN}/archive/"
-#UGC_COMMIT_ID="16a870b8176e1dbf925d6d08c6b36cb8221e8000"
+#UGC_COMMIT_ID="20a02ccb67d8ab4139b31bcc06b04bd8d950fcac"
 
 # Use following environment variables to customise the build
 # EXTRA_GN — pass extra options to gn
@@ -34,7 +34,7 @@ fi
 
 DESCRIPTION="Modifications to Chromium for removing Google integration and enhancing privacy"
 HOMEPAGE="https://github.com/Eloston/ungoogled-chromium"
-PATCHSET="4"
+PATCHSET="5"
 PATCHSET_NAME="chromium-$(ver_cut 1)-patchset-${PATCHSET}"
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV}.tar.xz
 	https://github.com/stha09/chromium-patches/releases/download/${PATCHSET_NAME}/${PATCHSET_NAME}.tar.xz
@@ -281,8 +281,9 @@ src_prepare() {
 	local PATCHES=(
 		"${WORKDIR}/patches"
 		"${FILESDIR}/chromium-93-InkDropHost-crash.patch"
-		"${FILESDIR}/chromium-96-EnumTable-crash.patch"
-		"${FILESDIR}/chromium-97-arm64-mte-clang.patch"
+		"${FILESDIR}/chromium-97-arm-tflite-cast.patch"
+		"${FILESDIR}/chromium-98-EnumTable-crash.patch"
+		"${FILESDIR}/chromium-98-system-libdrm.patch"
 		"${FILESDIR}/chromium-glibc-2.34.patch"
 		"${FILESDIR}/chromium-use-oauth2-client-switches-as-default.patch"
 		"${FILESDIR}/chromium-shim_headers.patch"
@@ -299,7 +300,7 @@ src_prepare() {
 
 	use convert-dict && eapply "${FILESDIR}/chromium-ucf-dict-utility.patch"
 
-	if use system-ffmpeg; then
+	if use system-ffmpeg && has_version "<media-video/ffmpeg-5.0"; then
 		eapply "${FILESDIR}/chromium-93-ffmpeg-4.4.patch"
 		eapply "${FILESDIR}/unbundle-ffmpeg-av_stream_get_first_dts.patch"
 	fi
@@ -314,9 +315,6 @@ src_prepare() {
 	use system-openjpeg && eapply "${FILESDIR}/chromium-system-openjpeg-r2.patch"
 
 	use vdpau && eapply "${FILESDIR}/vdpau-support-r4.patch"
-
-	# Fixes https://bugs.chromium.org/p/chromium/issues/detail?id=1279574
-	use wayland && eapply "${FILESDIR}/chromium-wayland-fixed-terminate-caused-by-binding-to-wrong-version.patch"
 
 	# From here we adapt ungoogled-chromium's patches to our needs
 	local ugc_pruning_list="${UGC_WD}/pruning.list"
@@ -1126,7 +1124,6 @@ src_install() {
 	fi
 
 	doins -r out/Release/locales
-	doins -r out/Release/resources
 	#doins -r out/Release/MEIPreload
 
 	# Install vk_swiftshader_icd.json; bug #827861
