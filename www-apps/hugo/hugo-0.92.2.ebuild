@@ -1149,7 +1149,7 @@ LICENSE="Apache-2.0 Unlicense BSD BSD-2 MPL-2.0"
 
 SLOT="0"
 
-IUSE="+bash-completion doc +sass"
+IUSE="+bash-completion doc +fish-completion +sass +zsh-completion"
 
 RESTRICT="test"
 
@@ -1160,7 +1160,16 @@ src_compile() {
 		$(usex sass "-tags extended" "") -o "${S}/bin/hugo" || die
 	bin/hugo gen man --dir man || die
 	if use bash-completion ; then
-		bin/hugo gen autocomplete --completionfile hugo || die
+		mkdir -pv completion/bash || die
+		bin/hugo gen completion bash > completion/bash/hugo || die
+	fi
+	if use fish-completion ; then
+		mkdir -pv completion/fish || die
+		bin/hugo gen completion fish > completion/fish/hugo || die
+	fi
+	if use zsh-completion ; then
+		mkdir -pv completion/zsh || die
+		bin/hugo gen completion zsh > completion/zsh/hugo || die
 	fi
 	if use doc ; then
 		bin/hugo gen doc --dir doc || die
@@ -1171,7 +1180,15 @@ src_install() {
 	dobin bin/*
 	doman man/*
 	if use bash-completion ; then
-		dobashcomp hugo || die
+		dobashcomp completion/bash/hugo || die
+	fi
+	if use fish-completion ; then
+		insinto /usr/share/fish/vendor_completions.d
+		doins completion/fish/hugo
+	fi
+	if use zsh-completion ; then
+		insinto /usr/share/zsh/site-functions
+		doins completion/zsh/hugo
 	fi
 	if use doc ; then
 		dodoc -r doc/
