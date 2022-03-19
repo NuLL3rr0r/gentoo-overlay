@@ -11,23 +11,20 @@ inherit chromium-2 desktop readme.gentoo-r1 xdg-utils
 
 DESCRIPTION="Modifications to Chromium for removing Google integration and enhancing privacy"
 HOMEPAGE="https://www.chromium.org/Home https://github.com/Eloston/ungoogled-chromium"
+DL_URL="https://github.com/PF4Public/${PN}/releases/download/${PV}"
 SRC_URI="
 	core2? (
-		https://github.com/PF4Public/${PN}/releases/download/${PV}/core2.tar.bz2
-		-> ${P}-core2.tar.bz2
+		${DL_URL}/core2.tar.bz2 -> ${P}-core2.tar.bz2
 	)
 	haswell? (
-		https://github.com/PF4Public/${PN}/releases/download/${PV}/haswell.tar.bz2
-		-> ${P}-haswell.tar.bz2
+		${DL_URL}/haswell.tar.bz2 -> ${P}-haswell.tar.bz2
 	)
 	generic? (
 		amd64? (
-		https://github.com/PF4Public/${PN}/releases/download/${PV}/x86-64.tar.bz2
-		-> ${P}-x86-64.tar.bz2
+		${DL_URL}/x86-64.tar.bz2 -> ${P}-x86-64.tar.bz2
 		)
 		x86? (
-		https://github.com/PF4Public/${PN}/releases/download/${PV}/i686.tar.bz2
-		-> ${P}-i686.tar.bz2
+		${DL_URL}/i686.tar.bz2 -> ${P}-i686.tar.bz2
 		)
 	)
 "
@@ -100,7 +97,7 @@ CDEPEND="
 	dev-libs/libxslt
 	dev-libs/re2
 	media-libs/openh264:0/6
-	=dev-libs/icu-69*:0
+	=dev-libs/icu-70*:0
 "
 RDEPEND="${CDEPEND}
 	x11-misc/xdg-utils
