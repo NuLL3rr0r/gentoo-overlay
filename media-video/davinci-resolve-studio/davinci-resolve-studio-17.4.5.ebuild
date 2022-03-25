@@ -53,7 +53,7 @@ LIBS_SYM="
 KEYWORDS="~amd64"
 DESCRIPTION="Professional A/V post-production software suite from Blackmagic Design"
 HOMEPAGE="https://www.blackmagicdesign.com/support/family/davinci-resolve-and-fusion"
-SRC_URI="${PKG_NAME}.zip"
+SRC_URI="https://sw.blackmagicdesign.com/DaVinciResolve/v${PV}/${PKG_NAME}.zip"
 RESTRICT="mirror strip"
 IUSE="bundled-libs developer video_cards_amdgpu video_cards_nvidia"
 
