@@ -1,14 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit eutils flag-o-matic linux-info linux-mod user udev
+inherit eutils flag-o-matic linux-info linux-mod udev
 
 DESCRIPTION="VMware kernel modules"
 HOMEPAGE="https://github.com/mkubecek/vmware-host-modules"
 
-MY_KERNEL_VERSION="5.15"
+MY_KERNEL_VERSION="5.16"
 SRC_URI="https://github.com/mkubecek/vmware-host-modules/archive/w${PV}-k${MY_KERNEL_VERSION}.zip -> ${P}-${MY_KERNEL_VERSION}.zip"
 
 LICENSE="GPL-2"
@@ -16,12 +16,11 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 
-RDEPEND=""
+RDEPEND="acct-group/vmware"
 DEPEND=""
 
-RESTRICT="mirror"
-
 S="${WORKDIR}/vmware-host-modules-w${PV}-k${MY_KERNEL_VERSION}"
+MY_S="$S"
 
 pkg_setup() {
 	CONFIG_CHECK="~HIGH_RES_TIMERS"
@@ -36,21 +35,17 @@ pkg_setup() {
 	linux-info_pkg_setup
 	linux-mod_pkg_setup
 
-	VMWARE_GROUP=${VMWARE_GROUP:-vmware}
-
 	VMWARE_MODULE_LIST="vmmon vmnet"
 
 	VMWARE_MOD_DIR="${PN}-${PVR}"
 
 	BUILD_TARGETS="auto-build KERNEL_DIR=${KERNEL_DIR} KBUILD_OUTPUT=${KV_OUT_DIR}"
 
-	enewgroup "${VMWARE_GROUP}"
-
 	filter-flags -mfpmath=sse -mavx -mpclmul -maes
 	append-cflags -mno-sse  # Found a problem similar to bug #492964
 
 	for mod in ${VMWARE_MODULE_LIST}; do
-		MODULE_NAMES="${MODULE_NAMES} ${mod}(misc:${S}/${mod}-only)"
+		MODULE_NAMES="${MODULE_NAMES} ${mod}(misc:${MY_S}/${mod}-only)"
 	done
 }
 
@@ -95,5 +90,5 @@ src_install() {
 
 pkg_postinst() {
 	linux-mod_pkg_postinst
-	ewarn "Don't forget to run '/etc/init.d/vmware restart' to use the new kernel modules."
+	ewarn "Don't forget to run 'rc-service vmware restart' to use the new kernel modules."
 }
