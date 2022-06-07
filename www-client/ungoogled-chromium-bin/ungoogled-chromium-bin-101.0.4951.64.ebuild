@@ -14,17 +14,17 @@ HOMEPAGE="https://www.chromium.org/Home https://github.com/Eloston/ungoogled-chr
 DL_URL="https://github.com/PF4Public/${PN}/releases/download/${PV}"
 SRC_URI="
 	core2? (
-		${DL_URL}/core2.tar.bz2 -> ${P}-core2.tar.bz2
+		${DL_URL}/core2.tar.bz2 -> ${PF}-core2.tar.bz2
 	)
 	haswell? (
-		${DL_URL}/haswell.tar.bz2 -> ${P}-haswell.tar.bz2
+		${DL_URL}/haswell.tar.bz2 -> ${PF}-haswell.tar.bz2
 	)
 	generic? (
 		amd64? (
-		${DL_URL}/x86-64.tar.bz2 -> ${P}-x86-64.tar.bz2
+		${DL_URL}/x86-64.tar.bz2 -> ${PF}-x86-64.tar.bz2
 		)
 		x86? (
-		${DL_URL}/i686.tar.bz2 -> ${P}-i686.tar.bz2
+		${DL_URL}/i686.tar.bz2 -> ${PF}-i686.tar.bz2
 		)
 	)
 "
@@ -66,7 +66,6 @@ CDEPEND="
 	>=media-libs/harfbuzz-3.1.1:0[icu(-)]
 	media-libs/libjpeg-turbo
 	media-libs/libpng
-	media-libs/libvpx:0/6[postproc]
 	|| (
 		media-sound/pulseaudio
 		>=media-sound/apulse-0.1.9
@@ -96,7 +95,7 @@ CDEPEND="
 	app-arch/snappy
 	dev-libs/libxslt
 	dev-libs/re2
-	media-libs/openh264:0/6
+	media-libs/openh264
 	=dev-libs/icu-70*:0
 "
 RDEPEND="${CDEPEND}
@@ -198,6 +197,11 @@ pkg_postrm() {
 }
 
 pkg_postinst() {
+	elog "VA-API is disabled by default at runtime. You have to enable it"
+	elog "by adding --enable-features=VaapiVideoDecoder and "
+	elog "--disable-features=UseChromeOSDirectVideoDecoder to CHROMIUM_FLAGS"
+	elog "in /etc/chromium/default."
+	
 	xdg_icon_cache_update
 	xdg_desktop_database_update
 	readme.gentoo_print_elog

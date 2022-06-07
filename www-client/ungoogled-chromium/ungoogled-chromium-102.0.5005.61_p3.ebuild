@@ -5,16 +5,16 @@ EAPI=8
 PYTHON_COMPAT=( python3_{8..10} )
 PYTHON_REQ_USE="xml"
 
-CHROMIUM_LANGS="am ar bg bn ca cs da de el en-GB es es-419 et fa fi fil fr gu he
+CHROMIUM_LANGS="af am ar bg bn ca cs da de el en-GB es es-419 et fa fi fil fr gu he
 	hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk sl sr
-	sv sw ta te th tr uk vi zh-CN zh-TW"
+	sv sw ta te th tr uk ur vi zh-CN zh-TW"
 
 inherit check-reqs chromium-2 desktop flag-o-matic ninja-utils pax-utils python-any-r1 readme.gentoo-r1 toolchain-funcs xdg-utils
 
-UGC_PVR="${PVR/r}"
-UGC_PF="${PN}-${UGC_PVR}"
+UGC_PV="${PV/_p/-}"
+UGC_PF="${PN}-${UGC_PV}"
 UGC_URL="https://github.com/Eloston/${PN}/archive/"
-#UGC_COMMIT_ID="ff76a76a9e4d988899d369aee16c64b6f1a42d03"
+# UGC_COMMIT_ID="4552de1c87ae70cde375b268d71df4360198e40b"
 
 # Use following environment variables to customise the build
 # EXTRA_GN — pass extra options to gn
@@ -25,7 +25,7 @@ UGC_URL="https://github.com/Eloston/${PN}/archive/"
 
 if [ -z "$UGC_COMMIT_ID" ]
 then
-	UGC_URL="${UGC_URL}${UGC_PVR}.tar.gz -> ${UGC_PF}.tar.gz"
+	UGC_URL="${UGC_URL}${UGC_PV}.tar.gz -> ${UGC_PF}.tar.gz"
 	UGC_WD="${WORKDIR}/${UGC_PF}"
 else
 	UGC_URL="${UGC_URL}${UGC_COMMIT_ID}.tar.gz -> ${PN}-${UGC_COMMIT_ID}.tar.gz"
@@ -34,20 +34,18 @@ fi
 
 DESCRIPTION="Modifications to Chromium for removing Google integration and enhancing privacy"
 HOMEPAGE="https://github.com/Eloston/ungoogled-chromium"
-PATCHSET="3"
+PATCHSET="6"
 PATCHSET_NAME="chromium-$(ver_cut 1)-patchset-${PATCHSET}"
-PPC64LE_PATCHSET_NAME="chromium_98.0.4758.102-1raptor0.debian"
-SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV}.tar.xz
+PATCHSET_NAME_PPC64="chromium_102.0.5005.61-1raptor0~deb11u1.debian"
+SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV/_*}.tar.xz
 	https://github.com/stha09/chromium-patches/releases/download/${PATCHSET_NAME}/${PATCHSET_NAME}.tar.xz
-	ppc64? (
-		https://ppa.quickbuild.io/raptor-engineering-public/chromium/ubuntu/pool/main/c/chromium/${PPC64LE_PATCHSET_NAME}.tar.xz
-	)
-	${UGC_URL}"
+	${UGC_URL}
+	ppc64? ( https://ppa.quickbuild.io/raptor-engineering-public/chromium/ubuntu/pool/main/c/chromium/${PATCHSET_NAME_PPC64}.tar.xz )"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~x86"
-IUSE="cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless js-type-check kerberos +official optimize-thinlto optimize-webui pgo pic +proprietary-codecs pulseaudio screencast selinux suid +system-ffmpeg +system-harfbuzz +system-icu +system-jsoncpp +system-libevent system-libvpx +system-openh264 system-openjpeg +system-png +system-re2 thinlto vaapi vdpau wayland widevine"
+KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+IUSE="cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless js-type-check kerberos +official optimize-thinlto optimize-webui pgo pic +proprietary-codecs pulseaudio screencast selinux suid +system-ffmpeg +system-harfbuzz +system-icu +system-jsoncpp +system-libevent +system-libusb system-libvpx +system-openh264 system-openjpeg +system-png +system-re2 +system-snappy thinlto vaapi vdpau wayland widevine"
 RESTRICT="
 	!system-ffmpeg? ( proprietary-codecs? ( bindist ) )
 	!system-openh264? ( bindist )
@@ -74,12 +72,15 @@ COMMON_X_DEPEND="
 	x11-libs/libxshmfence:=
 	virtual/opengl
 "
+
 COMMON_SNAPSHOT_DEPEND="
+	system-snappy? ( app-arch/snappy )
 	system-jsoncpp? ( dev-libs/jsoncpp )
 	system-libevent? ( dev-libs/libevent )
 	system-openjpeg? ( media-libs/openjpeg:2= )
 	system-re2? ( >=dev-libs/re2-0.2019.08.01:= )
 	system-libvpx? ( >=media-libs/libvpx-1.8.2:=[postproc] )
+	system-libusb? ( virtual/libusb:1 )
 	system-icu? ( >=dev-libs/icu-69.1:= )
 	>=dev-libs/libxml2-2.9.4-r3:=[icu]
 	dev-libs/nspr:=
@@ -106,7 +107,7 @@ COMMON_SNAPSHOT_DEPEND="
 		)
 		sys-apps/pciutils:=
 		kerberos? ( virtual/krb5 )
-		vaapi? ( >=x11-libs/libva-2.7:=[X,drm] )
+		vaapi? ( >=x11-libs/libva-2.7:=[X] )
 		x11-libs/libX11:=
 		x11-libs/libXext:=
 		x11-libs/libxcb:=
@@ -117,6 +118,7 @@ COMMON_SNAPSHOT_DEPEND="
 		)
 	)
 "
+
 COMMON_DEPEND="
 	${COMMON_SNAPSHOT_DEPEND}
 	app-arch/bzip2:=
@@ -175,6 +177,7 @@ BDEPEND="
 	>=dev-util/gn-0.1807
 	>=dev-util/gperf-3.0.3
 	>=dev-util/ninja-1.7.2
+	dev-vcs/git
 	>=net-libs/nodejs-7.6.0[inspector]
 	>=sys-devel/bison-2.4.3
 	sys-devel/flex
@@ -217,7 +220,7 @@ them in Chromium, then add --password-store=basic to CHROMIUM_FLAGS
 in /etc/chromium/default.
 "
 
-S="${WORKDIR}/chromium-${PV}"
+S="${WORKDIR}/chromium-${PV/_*}"
 
 python_check_deps() {
 	has_version -b "dev-python/setuptools[${PYTHON_USEDEP}]"
@@ -240,8 +243,8 @@ pre_build_checks() {
 
 	# Check build requirements, bug #541816 and bug #471810 .
 	CHECKREQS_MEMORY="4G"
-	CHECKREQS_DISK_BUILD="9G"
-	tc-is-cross-compiler && CHECKREQS_DISK_BUILD="12G"
+	CHECKREQS_DISK_BUILD="10G"
+	tc-is-cross-compiler && CHECKREQS_DISK_BUILD="13G"
 	if ( shopt -s extglob; is-flagq '-g?(gdb)?([1-9])' ); then
 		CHECKREQS_DISK_BUILD="16G"
 	fi
@@ -265,9 +268,9 @@ pkg_pretend() {
 	fi
 	if use system-libvpx && use vaapi; then
 		ewarn
-		ewarn "New vaapi code depends heavily on libvpx-1.9, see #43"
+		ewarn "New vaapi code depends heavily on libvpx, see #43"
 		ewarn "Consider disabling system-libvpx USE flag if using vaapi"
-		ewarn "A patch to make vaapi compatible with system libvpx-1.9 is welcome"
+		ewarn "A patch to make vaapi compatible with system libvpx is welcome"
 		ewarn
 		[[ -z "${NODIE}" ]] && die "The build will fail!"
 	fi
@@ -298,7 +301,7 @@ src_prepare() {
 	python_setup
 
 	if ! use custom-cflags; then #See #25 #92
-		sed -i '/default_stack_frames/Q' "${WORKDIR}/patches/chromium-98-compiler.patch" || die
+		sed -i '/default_stack_frames/Q' ${WORKDIR}/patches/chromium-*-compiler.patch || die
 	fi
 
 	local PATCHES=(
@@ -306,13 +309,15 @@ src_prepare() {
 		"${FILESDIR}/chromium-93-InkDropHost-crash.patch"
 		"${FILESDIR}/chromium-97-arm-tflite-cast.patch"
 		"${FILESDIR}/chromium-98-EnumTable-crash.patch"
-		"${FILESDIR}/chromium-98-system-libdrm.patch"
 		"${FILESDIR}/chromium-98-gtk4-build.patch"
-		"${FILESDIR}/chromium-glibc-2.34-r1.patch"
+		"${FILESDIR}/chromium-101-libxml-unbundle.patch"
 		"${FILESDIR}/chromium-use-oauth2-client-switches-as-default.patch"
 		"${FILESDIR}/chromium-shim_headers.patch"
 		"${FILESDIR}/chromium-cross-compile.patch"
 		"${FILESDIR}/sql-VirtualCursor-standard-layout.patch"
+		"${FILESDIR}/perfetto-system-zlib.patch"
+		"${FILESDIR}/gtk-fix-prefers-color-scheme-query.diff"
+		"${FILESDIR}/restore-x86.patch"
 	)
 
 	use ppc64 && PATCHES+=(
@@ -355,16 +360,15 @@ src_prepare() {
 		"${WORKDIR}/debian/patches/ppc64le/crashpad/0001-Implement-support-for-PPC64-on-Linux.patch"
 		"${WORKDIR}/debian/patches/ppc64le/database/0001-Properly-detect-little-endian-PPC64-systems.patch"
 		"${WORKDIR}/debian/patches/ppc64le/third_party/0001-Force-baseline-POWER8-AltiVec-VSX-CPU-features-when-.patch"
-		"${FILESDIR}/ppc64le/fixes/fix-breakpad-compile.patch"
+		"${FILESDIR}/ppc64le/fix-breakpad-compile.patch"
 		"${WORKDIR}/debian/patches/ppc64le/v8/0002-Add-ppc64-trap-instructions.patch"
 		"${WORKDIR}/debian/patches/ppc64le/third_party/0001-Add-PPC64-support-for-libdav1d.patch"
 		"${WORKDIR}/debian/patches/ppc64le/third_party/0001-Fix-libdav1d-compilation-on-clang-ppc.patch"
 		"${WORKDIR}/debian/patches/ppc64le/sandbox/fix-ppc64-linux-syscalls-headers.patch"
 		"${WORKDIR}/debian/patches/ppc64le/third_party/0003-thirdparty-fix-dav1d-gn.patch"
 		"${WORKDIR}/debian/patches/ppc64le/third_party/use-sysconf-page-size-on-ppc64.patch"
-		"${WORKDIR}/debian/patches/disable/swiftshader.patch"
-		"${WORKDIR}/debian/patches/disable/swiftshader-2.patch"
-		"${FILESDIR}/ppc64le/fixes/libpng-pdfium-compile-98.patch"
+		"${FILESDIR}/ppc64le/libpng-pdfium-compile-98.patch"
+		"${FILESDIR}/ppc64le/fix-swiftshader-compile.patch"
 	)
 
 	default
@@ -375,25 +379,35 @@ src_prepare() {
 	# adjust python interpreter version
 	sed -i -e "s|\(^script_executable = \).*|\1\"${EPYTHON}\"|g" .gn || die
 
+	cp "${FILESDIR}/jsoncpp.gn" build/linux/unbundle || die
+	cp "${FILESDIR}/libusb.gn" build/linux/unbundle || die
+	sed -i '/^REPLACEMENTS.*$/{s++REPLACEMENTS = {"libusb":"third_party/libusb/BUILD.gn","jsoncpp":"third_party/jsoncpp/BUILD.gn",+;h};${x;/./{x;q0};x;q1}' \
+		build/linux/unbundle/replace_gn_files.py || die
+
 	use convert-dict && eapply "${FILESDIR}/chromium-ucf-dict-utility.patch"
 
 	use system-ffmpeg && eapply "${FILESDIR}/chromium-99-opus.patch"
 
-	if use system-ffmpeg && has_version "<media-video/ffmpeg-5.0"; then
-		eapply "${FILESDIR}/chromium-93-ffmpeg-4.4.patch"
-		eapply "${FILESDIR}/unbundle-ffmpeg-av_stream_get_first_dts.patch"
+	if use system-ffmpeg; then
+		if has_version "<media-video/ffmpeg-5.0"; then
+			eapply "${FILESDIR}/chromium-93-ffmpeg-4.4.patch"
+			eapply "${FILESDIR}/unbundle-ffmpeg-av_stream_get_first_dts.patch"
+		fi
+		eapply "${FILESDIR}/reverse-roll-src-third_party-ffmpeg.patch"
 	fi
 
-	if use system-jsoncpp; then
-		eapply "${FILESDIR}/chromium-system-jsoncpp-r2.patch"
-		sed -i '/^#include "third_party\/jsoncpp.*$/{s//#include <json\/value\.h>/;h};${x;/./{x;q0};x;q1}' components/mirroring/service/receiver_response.h || die
-		sed -i '/^.*json\/reader.h"$/{s//#include <json\/reader\.h>/;h};${x;/./{x;q0};x;q1}' components/mirroring/service/receiver_response.cc || die
-		sed -i '/^.*json\/writer.h"$/{s//#include <json\/writer\.h>/;h};${x;/./{x;q0};x;q1}' components/mirroring/service/receiver_response.cc || die
-	fi
-
-	use system-openjpeg && eapply "${FILESDIR}/chromium-system-openjpeg-r2.patch"
+	use system-openjpeg && eapply "${FILESDIR}/chromium-system-openjpeg-r3.patch"
 
 	use vdpau && eapply "${FILESDIR}/vdpau-support-r4.patch"
+
+	if has_version ">=sys-devel/clang-15"; then
+		eapply "${FILESDIR}/clang-15.patch"
+	fi
+
+	#* Testing UGC PRs here
+	# pushd "${UGC_WD}" >/dev/null
+	# eapply "${DISTDIR}/${PN}-3fe28b04cf3723eaf73f99557d5389d445b9d0c9.patch"
+	# popd >/dev/null
 
 	# From here we adapt ungoogled-chromium's patches to our needs
 	local ugc_pruning_list="${UGC_WD}/pruning.list"
@@ -513,8 +527,8 @@ src_prepare() {
 		third_party/cros_system_api
 		third_party/dav1d
 		third_party/dawn
+		third_party/dawn/third_party/gn/webgpu-cts
 		third_party/dawn/third_party/khronos
-		third_party/dawn/third_party/tint
 		third_party/depot_tools
 		third_party/devscripts
 		third_party/devtools-frontend
@@ -565,7 +579,6 @@ src_prepare() {
 		third_party/jstemplate
 		third_party/khronos
 		third_party/leveldatabase
-		third_party/libXNVCtrl
 		third_party/libaddressinput
 		third_party/libaom
 		third_party/libaom/source/libaom/third_party/fastfeat
@@ -580,6 +593,11 @@ src_prepare() {
 		third_party/libsrtp
 		third_party/libsync
 		third_party/libudev
+	)
+	use system-libusb || keeplibs+=(
+		third_party/libusb
+	)
+	keeplibs+=(
 		third_party/libva_protected_content
 	)
 	use system-libvpx || keeplibs+=(
@@ -611,7 +629,6 @@ src_prepare() {
 		third_party/node
 		third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2
 		third_party/one_euro_filter
-		third_party/opencv
 		third_party/openscreen
 		third_party/openscreen/src/third_party/mozilla
 		third_party/openscreen/src/third_party/tinycbor/src/src
@@ -641,8 +658,6 @@ src_prepare() {
 		third_party/protobuf/third_party/six
 		third_party/pyjson5
 		third_party/qcms
-	)
-	keeplibs+=(
 		third_party/rnnoise
 		third_party/s2cellid
 		third_party/securemessage
@@ -654,7 +669,11 @@ src_prepare() {
 		third_party/skia/third_party/skcms
 		third_party/skia/third_party/vulkan
 		third_party/smhasher
+	)
+	use system-snappy || keeplibs+=(
 		third_party/snappy
+	)
+	keeplibs+=(
 		third_party/sqlite
 		third_party/swiftshader
 		third_party/swiftshader/third_party/astc-encoder
@@ -662,7 +681,7 @@ src_prepare() {
 		third_party/swiftshader/third_party/marl
 		third_party/swiftshader/third_party/subzero
 		third_party/swiftshader/third_party/SPIRV-Headers/include/spirv/unified1
-		third_party/tcmalloc
+		third_party/swiftshader/third_party/SPIRV-Tools
 		third_party/tensorflow-text
 		third_party/tflite
 		third_party/tflite/src/third_party/eigen3
@@ -670,7 +689,6 @@ src_prepare() {
 		third_party/ruy
 		third_party/six
 		third_party/ukey2
-		third_party/usrsctp
 		third_party/utf
 		third_party/vulkan
 		third_party/web-animations-js
@@ -742,6 +760,11 @@ src_prepare() {
 			generate_gni.sh || die
 		./generate_gni.sh || die
 		popd >/dev/null || die
+
+		pushd third_party/ffmpeg >/dev/null || die
+		cp libavcodec/ppc/h264dsp.c libavcodec/ppc/h264dsp_ppc.c || die
+		cp libavcodec/ppc/h264qpel.c libavcodec/ppc/h264qpel_ppc.c || die
+		popd >/dev/null || die
 	fi
 
 	# Remove most bundled libraries. Some are still needed.
@@ -767,8 +790,15 @@ src_configure() {
 
 	if use clang && ! tc-is-clang ; then
 		einfo "Enforcing the use of clang due to USE=clang ..."
-		CC=${CHOST}-clang
-		CXX=${CHOST}-clang++
+		if tc-is-cross-compiler; then
+			CC="${CBUILD}-clang -target ${CHOST} --sysroot ${ESYSROOT}"
+			CXX="${CBUILD}-clang++ -target ${CHOST} --sysroot ${ESYSROOT}"
+			BUILD_CC=${CBUILD}-clang
+			BUILD_CXX=${CBUILD}-clang++
+		else
+			CC=${CHOST}-clang
+			CXX=${CHOST}-clang++
+		fi
 		AR=llvm-ar #thinlto fails otherwise
 		strip-unsupported-flags
 	elif ! use clang && ! tc-is-gcc ; then
@@ -792,7 +822,7 @@ src_configure() {
 		tc-export BUILD_{AR,CC,CXX,NM}
 		myconf_gn+=" host_toolchain=\"//build/toolchain/linux/unbundle:host\""
 		myconf_gn+=" v8_snapshot_toolchain=\"//build/toolchain/linux/unbundle:host\""
-		myconf_gn+=" pkg_config=\"$(tc-get_PKG_CONFIG)\""
+		myconf_gn+=" pkg_config=\"$(tc-getPKG_CONFIG)\""
 		myconf_gn+=" host_pkg_config=\"$(tc-getBUILD_PKG_CONFIG)\""
 
 		# setup cups-config, build system only uses --libs option
@@ -833,11 +863,18 @@ src_configure() {
 	if use system-ffmpeg; then
 		gn_system_libraries+=( ffmpeg opus )
 	fi
+	if use system-jsoncpp; then
+		gn_system_libraries+=( jsoncpp )
+	fi
 	if use system-icu; then
 		gn_system_libraries+=( icu )
 	fi
 	if use system-png; then
 		gn_system_libraries+=( libpng )
+		myconf_gn+=" use_system_libpng=true"
+	fi
+	if use system-libusb; then
+		gn_system_libraries+=( libusb )
 	fi
 	if use system-libvpx; then
 		gn_system_libraries+=( libvpx )
@@ -851,6 +888,9 @@ src_configure() {
 	use system-re2 && gn_system_libraries+=(
 		re2
 	)
+	use system-snappy && gn_system_libraries+=(
+		snappy
+	)
 	build/linux/unbundle/replace_gn_files.py --system-libraries "${gn_system_libraries[@]}" || die
 
 	# See dependency logic in third_party/BUILD.gn
@@ -863,6 +903,7 @@ src_configure() {
 	myconf_gn+=" enable_js_type_check=$(usex js-type-check true false)"
 	myconf_gn+=" enable_hangout_services_extension=$(usex hangouts true false)"
 	myconf_gn+=" enable_widevine=$(usex widevine true false)"
+
 	if use headless; then
 		myconf_gn+=" use_cups=false"
 		myconf_gn+=" use_kerberos=false"
@@ -926,8 +967,9 @@ src_configure() {
 	myconf_gn+=" build_with_tflite_lib=false"
 
 	# Additional flags
-	myconf_gn+=" use_system_libjpeg=true"
+	myconf_gn+=" perfetto_use_system_zlib=true"
 	myconf_gn+=" use_system_zlib=true"
+	myconf_gn+=" use_system_libjpeg=true"
 	myconf_gn+=" rtc_build_examples=false"
 
 	# Never use bundled gold binary. Disable gold linker flags for now.
@@ -1000,7 +1042,9 @@ src_configure() {
 		# from 25% to 10%. The performance number of page_cycler is the
 		# same on two of the thinLTO configurations, we got 1% slowdown
 		# on speedometer when changing import-instr-limit from 100 to 30.
-		#append-ldflags "-Wl,-plugin-opt,-import-instr-limit=30"
+		# append-ldflags "-Wl,-plugin-opt,-import-instr-limit=30"
+		sed -i '/import_instr_limit = 5/{s++import_instr_limit = 30+;h};${x;/./{x;q0};x;q1}' \
+			build/config/compiler/BUILD.gn || die
 
 		append-ldflags "-Wl,--thinlto-jobs=$(makeopts_jobs)"
 		myconf_gn+=" use_lld=true"
@@ -1013,6 +1057,14 @@ src_configure() {
 
 	# Disable fatal linker warnings, bug 506268.
 	myconf_gn+=" fatal_linker_warnings=false"
+
+	# Disable external code space for V8 for ppc64. It is disabled for ppc64
+	# by default, but cross-compiling on amd64 enables it again.
+	if tc-is-cross-compiler; then
+		if ! use amd64 && ! use arm64; then
+			myconf_gn+=" v8_enable_external_code_space=false"
+		fi
+	fi
 
 	# Bug 491582.
 	export TMPDIR="${WORKDIR}/temp"
@@ -1186,6 +1238,7 @@ src_install() {
 	fi
 
 	use enable-driver && doexe out/Release/chromedriver
+	#doexe out/Release/chrome_crashpad_handler
 
 	ozone_auto_session () {
 		use wayland && ! use headless && echo true || echo false
@@ -1225,7 +1278,7 @@ src_install() {
 		[[ ${#files[@]} -gt 0 ]] && doins "${files[@]}"
 	)
 
-	if ! use system-icu; then
+	if ! use system-icu && ! use headless; then
 		doins out/Release/icudtl.dat
 	fi
 
@@ -1273,10 +1326,6 @@ pkg_postrm() {
 }
 
 pkg_postinst() {
-	xdg_icon_cache_update
-	xdg_desktop_database_update
-	readme.gentoo_print_elog
-
 	if ! use headless; then
 		if use vaapi; then
 			elog "VA-API is disabled by default at runtime. You have to enable it"
@@ -1300,4 +1349,8 @@ pkg_postinst() {
 			elog "Make sure you have www-plugins/chrome-binary-plugins installed"
 		fi
 	fi
+
+	xdg_icon_cache_update
+	xdg_desktop_database_update
+	readme.gentoo_print_elog
 }
