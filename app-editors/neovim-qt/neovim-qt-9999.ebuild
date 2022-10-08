@@ -1,9 +1,9 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit git-r3 cmake-utils
+inherit git-r3 cmake
 
 DESCRIPTION="Neovim client library and GUI, in Qt5"
 HOMEPAGE="https://github.com/equalsraf/neovim-qt"
@@ -31,5 +31,5 @@ src_configure() {
 		-DUSE_SYSTEM_MSGPACK=$(usex msgpack ON OFF)
 	)
 
-	cmake-utils_src_configure
+	cmake_src_configure
 }

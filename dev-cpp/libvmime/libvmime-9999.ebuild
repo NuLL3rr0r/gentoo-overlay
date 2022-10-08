@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit git-r3 cmake-utils
+inherit git-r3 cmake
 
 DESCRIPTION="Library for working with MIME messages and Internet messaging services like IMAP, POP or SMTP"
 HOMEPAGE="http://www.vmime.org"
@@ -30,18 +30,18 @@ src_prepare() {
         -e 's|SET(VMIME_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}${LIB_SUFFIX})|SET(VMIME_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})|' \
         -e 's|SET(VMIME_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})|SET(VMIME_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)|' \
 		CMakeLists.txt || die "sed failed"
-	cmake-utils_src_prepare
+	cmake_src_prepare
 }
 
 src_configure() {
 	local mycmakeargs="
-		$(cmake-utils_use c++11 VMIME_SHARED_PTR_USE_CXX)
-		$(cmake-utils_use sasl VMIME_HAVE_SASL_SUPPORT)
-		$(cmake-utils_use pop VMIME_HAVE_MESSAGING_PROTO_POP3)
-		$(cmake-utils_use smtp VMIME_HAVE_MESSAGING_PROTO_SMTP)
-		$(cmake-utils_use imap VMIME_HAVE_MESSAGING_PROTO_IMAP)
-		$(cmake-utils_use maildir VMIME_HAVE_MESSAGING_PROTO_MAILDIR )
-		$(cmake-utils_use sendmail VMIME_HAVE_MESSAGING_PROTO_SENDMAIL)
+		$(cmake_use c++11 VMIME_SHARED_PTR_USE_CXX)
+		$(cmake_use sasl VMIME_HAVE_SASL_SUPPORT)
+		$(cmake_use pop VMIME_HAVE_MESSAGING_PROTO_POP3)
+		$(cmake_use smtp VMIME_HAVE_MESSAGING_PROTO_SMTP)
+		$(cmake_use imap VMIME_HAVE_MESSAGING_PROTO_IMAP)
+		$(cmake_use maildir VMIME_HAVE_MESSAGING_PROTO_MAILDIR )
+		$(cmake_use sendmail VMIME_HAVE_MESSAGING_PROTO_SENDMAIL)
 	"
 
 	if use icu; then
@@ -63,18 +63,18 @@ src_configure() {
 	else
 		CMAKE_BUILD_TYPE="Release"
 	fi
-	cmake-utils_src_configure
+	cmake_src_configure
 }
 
 src_compile() {
-	cmake-utils_src_compile
+	cmake_src_compile
 	if use doc ; then
 		doxygen vmime.doxygen || die "doxygen failed"
 	fi
 }
 
 src_install() {
-	cmake-utils_src_install
+	cmake_src_install
 	dodoc AUTHORS
 	if use doc ; then
 		dohtml doc/html/*

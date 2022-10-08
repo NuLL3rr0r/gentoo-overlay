@@ -1,11 +1,11 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 CMAKE_MAKEFILE_GENERATOR="ninja"
 
-inherit cmake-utils user
+inherit cmake user
 
 DESCRIPTION="Wt, C++ Web Toolkit"
 HOMEPAGE="https://www.webtoolkit.eu/wt"
@@ -78,7 +78,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	cmake-utils_src_prepare
+	cmake_src_prepare
 	eapply "${FILESDIR}/WtInstall.cmake.patch"
 }
 
@@ -120,15 +120,15 @@ src_configure() {
 		-DWT_WRASTERIMAGE_IMPLEMENTATION:STRING="GraphicsMagick"
 		-DZLIB_PREFIX:STRING="/usr"
 	)
-	cmake-utils_src_configure
+	cmake_src_configure
 }
 
 src_compile() {
-	cmake-utils_src_compile
+	cmake_src_compile
 }
 
 src_install() {
-	cmake-utils_src_install
+	cmake_src_install
 
 	# Do not violate multilib strict
 	mv "${ED}/usr/lib" "${ED}/usr/$(get_libdir)" || die "mv failed"

@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit cmake-utils multilib
+inherit cmake multilib
 
 DESCRIPTION="Switch your X keyboard layouts from the command line"
 HOMEPAGE="https://github.com/ierton/xkb-switch"

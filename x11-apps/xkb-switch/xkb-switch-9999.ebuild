@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit cmake-utils git-r3 multilib
+inherit cmake git-r3 multilib
 
 DESCRIPTION="Switch your X keyboard layouts from the command line"
 HOMEPAGE="https://github.com/ierton/xkb-switch"

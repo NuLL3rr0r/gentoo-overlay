@@ -1,9 +1,9 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit cmake-utils
+inherit cmake
 
 DESCRIPTION="C++ wrapper for libcURL"
 HOMEPAGE="http://www.curlpp.org/"
@@ -19,7 +19,7 @@ DEPEND=">=dev-util/cmake-3.9.6
 	${RDEPEND}"
 
 src_prepare() {
-	cmake-utils_src_prepare
+	cmake_src_prepare
 	sed -i 's/@LDFLAGS@ //' extras/curlpp.pc.in
 	if ! use static-libs; then
 		eapply "${FILESDIR}/no_static_lib.patch"
@@ -27,7 +27,7 @@ src_prepare() {
 }
 
 src_install() {
-	cmake-utils_src_install
+	cmake_src_install
 	dodoc Readme.md doc/AUTHORS doc/TODO
 	if use doc; then
 		dodoc doc/guide.pdf
