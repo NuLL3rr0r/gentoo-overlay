@@ -107,7 +107,7 @@ src_install() (
 
 		dosym ${BRAVE_HOME}/brave /usr/bin/${PN} || die
 
-	# Install Icons for Brave.
+	# Install Icons for Brave. 
 		newicon "${FILESDIR}/braveAbout.png" "${PN}.png" || die
 		newicon -s 128 "${FILESDIR}/braveAbout.png" "${PN}.png" || die
 
