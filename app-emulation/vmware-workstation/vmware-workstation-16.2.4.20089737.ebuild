@@ -3,22 +3,22 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
-inherit eutils readme.gentoo-r1 pam python-any-r1 systemd xdg-utils
+PYTHON_COMPAT=( python3_{8..11} )
+inherit readme.gentoo-r1 pam python-any-r1 systemd xdg-utils
 
 MY_PN="VMware-Workstation-Full"
 MY_PV=$(ver_cut 1-3)
 PV_MODULES="${MY_PV}"
 PV_BUILD=$(ver_cut 4)
 MY_P="${MY_PN}-${MY_PV}-${PV_BUILD}"
-VMWARE_FUSION_VER="12.2.3/19436697" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
+VMWARE_FUSION_VER="12.2.4/20071091" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
 SYSTEMD_UNITS_TAG="gentoo-02"
 UNLOCKER_VERSION="3.0.4"
 
 DESCRIPTION="Emulate a complete PC without the performance overhead of most emulators"
 HOMEPAGE="http://www.vmware.com/products/workstation/"
 SRC_URI="
-	https://download3.vmware.com/software/WKST-${MY_PV//./}-LX-New/${MY_P}.x86_64.bundle
+	https://download3.vmware.com/software/WKST-${MY_PV//./}-LX/${MY_P}.x86_64.bundle
 	macos-guests? (
 		https://github.com/paolo-projects/unlocker/archive/${UNLOCKER_VERSION}.tar.gz -> unlocker-${UNLOCKER_VERSION}.tar.gz
 		vmware-tools-darwinPre15? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/x86/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${PV}.zip.tar )
@@ -44,9 +44,6 @@ REQUIRED_USE="
 "
 RESTRICT="mirror preserve-libs strip"
 
-BDEPEND="
-	app-admin/chrpath
-"
 RDEPEND="
 	app-arch/bzip2
 	app-arch/unzip
@@ -72,6 +69,7 @@ RDEPEND="
 	sys-apps/util-linux
 	sys-auth/polkit
 	virtual/libcrypt:*
+	x11-libs/libXinerama
 	x11-libs/libXxf86vm
 	x11-libs/libdrm
 	x11-libs/libxshmfence
@@ -85,7 +83,9 @@ DEPEND="
 	${PYTHON_DEPS}
 	>=dev-util/patchelf-0.9
 	modules? ( ~app-emulation/vmware-modules-${PV_MODULES} )
-	ovftool? ( app-admin/chrpath )
+"
+BDEPEND="
+	app-admin/chrpath
 "
 
 S=${WORKDIR}/extracted
@@ -96,7 +96,6 @@ QA_PREBUILT="/opt/*"
 QA_WX_LOAD="opt/vmware/lib/vmware/tools-upgraders/vmware-tools-upgrader-32 opt/vmware/lib/vmware/bin/vmware-vmx-stats opt/vmware/lib/vmware/bin/vmware-vmx-debug opt/vmware/lib/vmware/bin/vmware-vmx"
 # adding "opt/vmware/lib/vmware/lib/libvmware-gksu.so/libvmware-gksu.so" to QA_WX_LOAD doesn't work
 
-MY_ED="$ED"
 src_unpack() {
 	if has usersandbox ${FEATURES}; then
 		ewarn "You are emerging ${P} with 'usersandbox' enabled." \
@@ -138,6 +137,7 @@ src_prepare() {
 
 	rm -f */bin/vmware-modconfig
 	rm -rf */lib/modules/binary
+	# Bug 459566
 	mkdir vmware-network-editor/lib/lib
 	mv vmware-network-editor/lib/libvmware-netcfg.so vmware-network-editor/lib/lib/
 
@@ -146,9 +146,9 @@ src_prepare() {
 	fi
 
 	if use macos-guests; then
-		sed -i -e "s#vmx_path = '/usr#vmx_path = '${MY_ED}${VM_INSTALL_DIR//\//\\/}#" \
-			-e "s#os\.path\.isfile('/usr#os.path.isfile('${MY_ED}${VM_INSTALL_DIR//\//\\/}#" \
-			-e "s#vmwarebase = '/usr#vmwarebase = '${MY_ED}${VM_INSTALL_DIR//\//\\/}#" \
+		sed -i -e "s#vmx_path = '/usr#vmx_path = '${ED}${VM_INSTALL_DIR//\//\\/}#" \
+			-e "s#os\.path\.isfile('/usr#os.path.isfile('${ED}${VM_INSTALL_DIR//\//\\/}#" \
+			-e "s#vmwarebase = '/usr#vmwarebase = '${ED}${VM_INSTALL_DIR//\//\\/}#" \
 			"${WORKDIR}"/unlocker-*/unlocker.py
 	fi
 
@@ -173,24 +173,24 @@ src_install() {
 	into "${VM_INSTALL_DIR}"
 	dobin */bin/*
 	dosbin */sbin/*
-	rm "${MY_ED}${VM_INSTALL_DIR}"/bin/configure-initscript.sh || die
-	mv "${MY_ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher "${MY_ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher.bin
-	cat > "${MY_ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher <<-EOF
+	rm "${ED}${VM_INSTALL_DIR}"/bin/configure-initscript.sh || die
+	mv "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher.bin
+	cat > "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher <<-EOF
 		#!/usr/bin/env bash
 		export LD_LIBRARY_PATH="/opt/vmware/lib/vmware/lib/libssl.so.1.0.2:/opt/vmware/lib/vmware/lib/libcrypto.so.1.0.2"
 		"${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher.bin "\$@"
 	EOF
-	chmod 755 "${MY_ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher
+	chmod 755 "${ED}${VM_INSTALL_DIR}"/sbin/vmware-authdlauncher
 
 	# install the libraries
 	insinto "${VM_INSTALL_DIR}"/lib/vmware
 	doins -r */lib/* vmware-vmx/roms
-	rm "${MY_ED}${VM_INSTALL_DIR}"/lib/vmware/*.so || die
+	rm "${ED}${VM_INSTALL_DIR}"/lib/vmware/*.so || die
 
 	# install the installer
 	insinto "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}
 	doins -r vmware-installer/{cdsHelper,vmis,vmis-launcher,vmware-cds-helper,vmware-installer,vmware-installer.py,python}
-	chrpath -k -r '/../lib:$ORIGIN/../lib' "${MY_ED}${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/python/lib/lib-dynload/*.so >/dev/null || die
+	chrpath -k -r '/../lib:$ORIGIN/../lib' "${ED}${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/python/lib/lib-dynload/*.so >/dev/null || die
 	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/{vmis-launcher,cdsHelper,vmware-installer}
 	dosym "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/vmware-installer "${VM_INSTALL_DIR}"/bin/vmware-installer
 	insinto /etc/vmware-installer
@@ -198,7 +198,7 @@ src_install() {
 	sed -i \
 		-e "s/@@VERSION@@/${vmware_installer_version}/" \
 		-e "s,@@VMWARE_INSTALLER@@,${VM_INSTALL_DIR}/lib/vmware-installer/${vmware_installer_version}," \
-		"${MY_ED}/etc/vmware-installer/bootstrap"
+		"${ED}/etc/vmware-installer/bootstrap"
 
 	# install the ancillaries
 	insinto /usr
@@ -262,8 +262,8 @@ src_install() {
 		insinto "${VM_INSTALL_DIR}"/lib/vmware-ovftool
 		doins -r *
 
-		chmod 0755 "${MY_ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/{ovftool,ovftool.bin}
-		sed -i 's/readlink/readlink -f/' "${MY_ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/ovftool
+		chmod 0755 "${ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/{ovftool,ovftool.bin}
+		sed -i 's/readlink/readlink -f/' "${ED}${VM_INSTALL_DIR}"/lib/vmware-ovftool/ovftool
 		dosym ../lib/vmware-ovftool/ovftool "${VM_INSTALL_DIR}"/bin/ovftool
 
 		cd - >/dev/null
@@ -282,7 +282,12 @@ src_install() {
 	dosym "${VM_INSTALL_DIR}"/lib/vmware/icu /etc/vmware/icu
 
 	# fix permissions
-	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/bin/{appLoader,fusermount,mkisofs,vmware-remotemks}
+
+	# (we can't use "fperms" here, because globbing is done before the "${ED}"
+	# prefix is added to the path and this will obviously fail the first time
+	# the package is installed)
+	chmod 0755 "${ED}${VM_INSTALL_DIR}"/lib/vmware/bin/*
+
 	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/setup/vmware-config
 	fperms 4711 "${VM_INSTALL_DIR}"/lib/vmware/bin/vmware-vmx{,-debug,-stats}
 	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware/lib/libvmware-gksu.so/gksu-run-helper
@@ -299,19 +304,18 @@ src_install() {
 		CONFIG_PROTECT_MASK='/etc/vmware-installer'
 		VMWARE_USE_SHIPPED_LIBS=1
 	EOF
-	echo 'VMWARE_USE_SHIPPED_LIBS=1' >> "${envd}"
 
 	doenvd "${envd}"
 
 	# create the configuration
 	dodir /etc/vmware
 
-	cat > "${MY_ED}"/etc/vmware/bootstrap <<-EOF
+	cat > "${ED}"/etc/vmware/bootstrap <<-EOF
 		BINDIR='${VM_INSTALL_DIR}/bin'
 		LIBDIR='${VM_INSTALL_DIR}/lib'
 	EOF
 
-	cat > "${MY_ED}"/etc/vmware/config <<-EOF
+	cat > "${ED}"/etc/vmware/config <<-EOF
 		.encoding = "UTF-8"
 		bindir = "${VM_INSTALL_DIR}/bin"
 		libdir = "${VM_INSTALL_DIR}/lib/vmware"
@@ -339,7 +343,7 @@ src_install() {
 	EOF
 
 	if use vix; then
-		cat >> "${MY_ED}"/etc/vmware/config <<-EOF
+		cat >> "${ED}"/etc/vmware/config <<-EOF
 			vix.libdir = "${VM_INSTALL_DIR}/lib/vmware-vix"
 			vix.config.version = "1"
 		EOF
@@ -349,22 +353,22 @@ src_install() {
 		# install the init.d script
 		local initscript="${T}/vmware.rc"
 		sed -e "s:@@BINDIR@@:${VM_INSTALL_DIR}/bin:g" \
-			"${FILESDIR}/vmware-${major_minor}.rc" > "${initscript}" || die
+			"${FILESDIR}/vmware.rc" > "${initscript}" || die
 		newinitd "${initscript}" vmware
 	fi
 
 	# fill in variable placeholders
 	sed -e "s:@@LIBCONF_DIR@@:${VM_INSTALL_DIR}/lib/vmware/libconf:g" \
-		-i "${MY_ED}${VM_INSTALL_DIR}"/lib/vmware/libconf/etc/gtk-3.0/gdk-pixbuf.loaders || die
+		-i "${ED}${VM_INSTALL_DIR}"/lib/vmware/libconf/etc/gtk-3.0/gdk-pixbuf.loaders || die
 	sed -e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmplayer:g" \
 		-e "/^Encoding/d" \
-		-i "${MY_ED}/usr/share/applications/vmware-player.desktop" || die
+		-i "${ED}/usr/share/applications/vmware-player.desktop" || die
 	sed -e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmware:g" \
 		-e "/^Encoding/d" \
-		-i "${MY_ED}/usr/share/applications/vmware-workstation.desktop" || die
+		-i "${ED}/usr/share/applications/vmware-workstation.desktop" || die
 	sed -e "s:@@BINARY@@:${EPREFIX}${VM_INSTALL_DIR}/bin/vmware-netcfg:g" \
 		-e "/^Encoding/d" \
-		-i "${MY_ED}/usr/share/applications/vmware-netcfg.desktop" || die
+		-i "${ED}/usr/share/applications/vmware-netcfg.desktop" || die
 
 	# install systemd unit files
 	if use systemd; then
@@ -379,7 +383,7 @@ src_install() {
 	# VMware tools
 	for guest in ${IUSE_VMWARE_GUESTS}; do
 		if use vmware-tools-${guest}; then
-			local dbfile="${MY_ED}/etc/vmware-installer/database"
+			local dbfile="${ED}/etc/vmware-installer/database"
 			if ! [ -e "${dbfile}" ]; then
 				> "${dbfile}"
 				sqlite3 "${dbfile}" "CREATE TABLE settings(key VARCHAR PRIMARY KEY, value VARCHAR NOT NULL, component_name VARCHAR NOT NULL);"
@@ -399,7 +403,7 @@ src_install() {
 	done
 
 	# metadata
-	mv "${MY_ED}/usr/share/appdata" "${MY_ED}/usr/share/metainfo"
+	mv "${ED}/usr/share/appdata" "${ED}/usr/share/metainfo"
 
 	# readme
 	readme.gentoo_create_doc
@@ -413,7 +417,7 @@ pkg_postinst() {
 	xdg_desktop_database_update
 	xdg_mimeinfo_database_update
 	xdg_icon_cache_update
-	readme.gentoo_print_elog
+	elog "${DOC_CONTENTS}"
 }
 
 pkg_postrm() {
