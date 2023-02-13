@@ -3,15 +3,15 @@ author: Michael Gilbert <mgilbert@debian.org>
 
 --- a/third_party/pdfium/BUILD.gn
 +++ b/third_party/pdfium/BUILD.gn
-@@ -19,7 +19,7 @@ config("pdfium_common_config") {
+@@ -25,7 +25,7 @@
    cflags = []
    cflags_cc = []
    ldflags = []
 -  include_dirs = [ "." ]
 +  include_dirs = [ ".", "/usr/include/openjpeg-2.4", "/usr/include/openjpeg-2.5" ]
-   defines = [
-     "PNG_PREFIX",
-     "PNG_USE_READ_MACROS",
+   defines = []
+ 
+   if (!use_system_libopenjpeg2) {
 --- a/third_party/pdfium/core/fpdfapi/render/BUILD.gn
 +++ b/third_party/pdfium/core/fpdfapi/render/BUILD.gn
 @@ -49,6 +49,7 @@ source_set("render") {
@@ -27,7 +27,7 @@ author: Michael Gilbert <mgilbert@debian.org>
 @@ -12,7 +12,7 @@
  #include "core/fxcrt/unowned_ptr.h"
  #include "third_party/base/span.h"
- 
+
 -#if defined(USE_SYSTEM_LIBOPENJPEG2)
 +#if 1
  #include <openjpeg.h>
