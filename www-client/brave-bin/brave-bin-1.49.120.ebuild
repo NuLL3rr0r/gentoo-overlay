@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2023 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -22,7 +22,8 @@ SLOT="0"
 KEYWORDS="amd64"
 IUSE="gnome-keyring"
 
-DEPEND="gnome-base/gconf:2"
+# gconf is deprecated.
+# DEPEND="gnome-base/gconf:2"
 RDEPEND="
 	${DEPEND}
 	dev-libs/libpthread-stubs
