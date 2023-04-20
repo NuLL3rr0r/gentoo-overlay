@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Gentoo Authors
+# Copyright 2021-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # You will need games-util/steam-client-meta from the steam-overlay for this to work
@@ -485,6 +485,7 @@ HOMEPAGE="https://github.com/alvr-org/ALVR"
 #SRC_URI="https://github.com/alvr-org/ALVR/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 #SRC_URI+=" $(cargo_crate_uris) "
 EGIT_REPO_URI="https://github.com/alvr-org/ALVR.git"
+RESTRICT="network-sandbox" # Temp solution for bundled ffmpeg
 
 LICENSE="MIT"
 SLOT="0"
@@ -501,6 +502,8 @@ RDEPEND="
 	|| (
 		www-client/chromium
 		www-client/chromium-bin
+		www-client/ungoogled-chromium
+		www-client/ungoogled-chromium-bin
 	)
 "
 
@@ -521,10 +524,19 @@ src_unpack() {
 	# Patch one of ALVR's Cargo.toml files to fix an error produced
 	# by 'cargo vendor'.
 	pushd "${S}"
-	eapply "${FILESDIR}/0001-Use-same-ndk-and-egui-Use-egui-fork-with-updated-glu.patch"
+	eapply "${FILESDIR}/0001-Fix-cargo-vendor.patch"
 	popd
 
 	cargo_live_src_unpack
+}
+
+src_prepare() {
+	default
+
+	cargo_src_prepare
+
+	PKG_CONFIG_PATH="${FILESDIR}" \
+		cargo xtask prepare-deps --platform linux
 }
 
 src_configure() {
