@@ -513,6 +513,8 @@ RDEPEND="
 	|| (
 		www-client/chromium
 		www-client/chromium-bin
+		www-client/ungoogled-chromium
+		www-client/ungoogled-chromium-bin
 	)
 "
 
