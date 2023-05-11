@@ -120,9 +120,13 @@ src_install() (
 pkg_postinst() {
 	xdg_desktop_database_update
 	xdg_mimeinfo_database_update
-	elog "If upgrading from an 0.25.x release or earlier, note that Brave has changed configuration folders."
-	elog "you will have to import your browser data from Settings -> People -> Import Bookmarks and Settings"
-	elog "then choose \"Brave (old)\". All your settings, bookmarks, and passwords should return."
+	elog "If upgrading from 1.50.x release or earlier, note that Brave has changed the format of the"
+	elog "password file, and ALL YOUR OLD PASSWORDS WILL NOT WORK."
+	elog "YOUR BRAVE REWARDS WILL NOT WORK EITHER."
+	elog "The solution is to temporarily downgrade back to 1.50.x (legacy ebuild provided),"
+	elog "so you can export passwords from Brave's Password Manager."
+	elog "once you're back in a newer build, import passwords from inside Brave's Password Manager,"
+	elog "and select the file you saved."
 }
 
 pkg_postrm() {
