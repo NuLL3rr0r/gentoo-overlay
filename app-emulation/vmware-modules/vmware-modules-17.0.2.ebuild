@@ -3,13 +3,13 @@
 
 EAPI=7
 
-inherit flag-o-matic linux-info linux-mod user udev
+inherit flag-o-matic linux-mod user udev
 
 DESCRIPTION="VMware kernel modules"
 HOMEPAGE="https://github.com/mkubecek/vmware-host-modules"
 
 # Highest kernel version known to work:
-MY_KERNEL_VERSION="6.1"
+MY_KERNEL_VERSION="6.3"
 
 # Upstream doesn't want to tag versions or anything that looks like properly
 # releasing the software, so we need to just pick a commit from
@@ -17,7 +17,7 @@ MY_KERNEL_VERSION="6.1"
 # and test it ourselves.
 #
 # Details: https://github.com/mkubecek/vmware-host-modules/issues/158#issuecomment-1228341760
-MY_COMMIT="00dade1588074d071281fb83c4ba8824f0df3342"
+MY_COMMIT="650fb3abeb82f2b7d3a14f9579a7529d153636b7"
 
 SRC_URI=" https://github.com/mkubecek/vmware-host-modules/archive/${MY_COMMIT}.tar.gz -> ${P}-${MY_COMMIT}.tar.gz"
 
