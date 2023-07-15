@@ -1118,15 +1118,15 @@ src_compile() {
 	bin/hugo gen man --dir man || die
 	if use bash-completion ; then
 		mkdir -pv completion/bash || die
-		bin/hugo gen completion bash > completion/bash/hugo || die
+		bin/hugo completion bash > completion/bash/hugo || die
 	fi
 	if use fish-completion ; then
 		mkdir -pv completion/fish || die
-		bin/hugo gen completion fish > completion/fish/hugo || die
+		bin/hugo completion fish > completion/fish/hugo || die
 	fi
 	if use zsh-completion ; then
 		mkdir -pv completion/zsh || die
-		bin/hugo gen completion zsh > completion/zsh/hugo || die
+		bin/hugo completion zsh > completion/zsh/hugo || die
 	fi
 	if use doc ; then
 		bin/hugo gen doc --dir doc || die
