@@ -20,7 +20,7 @@ SRC_URI="https://github.com/brave/brave-browser/releases/download/v${PV}/brave-b
 LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="gnome-keyring"
+IUSE="keyring"
 
 # gconf is deprecated.
 # DEPEND="gnome-base/gconf:2"
