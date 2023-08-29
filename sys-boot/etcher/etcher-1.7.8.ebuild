@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=7
+EAPI=8
 
-inherit eutils unpacker
+inherit unpacker
 
 DESCRIPTION="Flash OS images to SD cards & USB drives, safely and easily."
 HOMEPAGE="https://etcher.io/"
