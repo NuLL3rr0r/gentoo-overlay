@@ -1,7 +1,7 @@
 # Copyright 1999-2023 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 BRAVE_PN="${PN/-bin/}"
 
@@ -15,12 +15,13 @@ inherit chromium-2 xdg-utils desktop
 
 DESCRIPTION="Brave Web Browser"
 HOMEPAGE="https://brave.com"
-SRC_URI="https://github.com/brave/brave-browser/releases/download/v${PV}/brave-browser-${PV}-linux-amd64.zip -> ${P}.zip"
+SRC_URI="amd64? ( https://github.com/brave/brave-browser/releases/download/v${PV}/brave-browser-${PV}-linux-amd64.zip )
+arm64? ( https://github.com/brave/brave-browser/releases/download/v${PV}/brave-browser-${PV}-linux-arm64.zip )"
 
 LICENSE="MPL-2.0"
 SLOT="0"
-KEYWORDS="amd64"
-IUSE="keyring"
+KEYWORDS="amd64 ~arm64"
+IUSE="gnome-keyring"
 
 # gconf is deprecated.
 # DEPEND="gnome-base/gconf:2"
@@ -109,8 +110,8 @@ src_install() (
 		dosym ${BRAVE_HOME}/brave /usr/bin/${PN} || die
 
 	# Install Icons for Brave.
-		newicon "${FILESDIR}/braveAbout.png" "${PN}.png" || die
-		newicon -s 128 "${FILESDIR}/braveAbout.png" "${PN}.png" || die
+		newicon "${WORKDIR}/product_logo_128.png" "${PN}.png" || die
+		newicon -s 128 "${WORKDIR}/product_logo_128.png" "${PN}.png" || die
 
 	# install-xattr doesnt approve using domenu or doins from FILESDIR
 		cp "${FILESDIR}"/${PN}.desktop "${S}"
@@ -120,13 +121,9 @@ src_install() (
 pkg_postinst() {
 	xdg_desktop_database_update
 	xdg_mimeinfo_database_update
-	elog "If upgrading from 1.50.x release or earlier, note that Brave has changed the format of the"
-	elog "password file, and ALL YOUR OLD PASSWORDS WILL NOT WORK."
-	elog "YOUR BRAVE REWARDS WILL NOT WORK EITHER."
-	elog "The solution is to temporarily downgrade back to 1.50.x (legacy ebuild provided),"
-	elog "so you can export passwords from Brave's Password Manager."
-	elog "once you're back in a newer build, import passwords from inside Brave's Password Manager,"
-	elog "and select the file you saved."
+	elog "If upgrading from an 0.25.x release or earlier, note that Brave has changed configuration folders."
+	elog "you will have to import your browser data from Settings -> People -> Import Bookmarks and Settings"
+	elog "then choose \"Brave (old)\". All your settings, bookmarks, and passwords should return."
 }
 
 pkg_postrm() {
