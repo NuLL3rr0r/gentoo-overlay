@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..11} )
+PYTHON_COMPAT=( python3_{10..12} )
 inherit readme.gentoo-r1 pam python-any-r1 systemd xdg-utils
 
 MY_PN="VMware-Workstation-Full"
@@ -11,7 +11,7 @@ MY_PV=$(ver_cut 1-3)
 PV_MODULES="${MY_PV}"
 PV_BUILD=$(ver_cut 4)
 MY_P="${MY_PN}-${MY_PV}-${PV_BUILD}"
-VMWARE_FUSION_VER="12.2.5/20904517" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
+VMWARE_FUSION_VER="13.5.0/22583790" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
 SYSTEMD_UNITS_TAG="gentoo-02"
 UNLOCKER_VERSION="3.0.5"
 
@@ -21,8 +21,8 @@ SRC_URI="
 	https://download3.vmware.com/software/WKST-${MY_PV//./}-LX/${MY_P}.x86_64.bundle
 	macos-guests? (
 		https://github.com/paolo-projects/unlocker/archive/${UNLOCKER_VERSION}.tar.gz -> unlocker-${UNLOCKER_VERSION}.tar.gz
-		vmware-tools-darwinPre15? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/x86/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${PV}.zip.tar )
-		vmware-tools-darwin? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/x86/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${PV}.zip.tar )
+		vmware-tools-darwinPre15? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/universal/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${PV}.zip.tar )
+		vmware-tools-darwin? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/universal/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${PV}.zip.tar )
 	)
 	systemd? ( https://github.com/akhuettel/systemd-vmware/archive/${SYSTEMD_UNITS_TAG}.tar.gz -> vmware-systemd-${SYSTEMD_UNITS_TAG}.tgz )
 	"
@@ -32,7 +32,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 # the kernel modules are optional because they're not needed to connect to VMs
 # running on remote systems - https://bugs.gentoo.org/604426
-IUSE="cups doc macos-guests +modules ovftool systemd vix"
+IUSE="doc macos-guests +modules ovftool systemd vix"
 DARWIN_GUESTS="darwin darwinPre15"
 IUSE_VMWARE_GUESTS="${DARWIN_GUESTS} linux linuxPreGlibc25 netware solaris windows winPre2k winPreVista"
 for guest in ${IUSE_VMWARE_GUESTS}; do
@@ -62,7 +62,6 @@ RDEPEND="
 	media-plugins/alsa-plugins[speex]
 	net-dns/libidn
 	net-libs/gnutls
-	cups? ( net-print/cups )
 	sys-apps/tcp-wrappers
 	sys-apps/util-linux
 	sys-auth/polkit
@@ -121,7 +120,7 @@ src_unpack() {
 		for guest in ${DARWIN_GUESTS}; do
 			if use vmware-tools-${guest}; then
 				mkdir extracted/vmware-tools-${guest}
-				mv "payload/VMware Fusion.app/Contents/Library/isoimages/${guest}.iso" extracted/vmware-tools-${guest}/ || die
+				mv "payload/VMware Fusion.app/Contents/Library/isoimages/x86_x64/${guest}.iso" extracted/vmware-tools-${guest}/ || die
 			fi
 		done
 		rm -rf __MACOSX payload manifest.plist preflight postflight com.vmware.fusion.zip
@@ -199,14 +198,6 @@ src_install() {
 	# install the ancillaries
 	insinto /usr
 	doins -r */share
-
-	if use cups; then
-		exeinto $(cups-config --serverbin)/filter
-		doexe */extras/thnucups
-
-		insinto /etc/cups
-		doins -r */etc/cups/*
-	fi
 
 	# Hardcoded EULA path. We need to disable the default compression.
 	insinto /usr/share/doc/vmware-workstation
@@ -414,6 +405,9 @@ pkg_postinst() {
 	xdg_mimeinfo_database_update
 	xdg_icon_cache_update
 	elog "${DOC_CONTENTS}"
+	elog "---"
+	elog "If inserting your license key in the GUI fails, you can do it from the command line, as root:"
+	elog "/opt/vmware/lib/vmware/bin/vmware-vmx-debug --new-sn  XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
 }
 
 pkg_postrm() {
