@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    </maintainer>
+    <longdescription>
+        Google Chrome is a browser that combines a minimal design with
+        sophisticated technology to make the web faster, safer, and easier.
+    </longdescription>
+</pkgmetadata>
