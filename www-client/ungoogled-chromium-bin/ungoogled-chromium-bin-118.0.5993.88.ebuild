@@ -66,7 +66,7 @@ CDEPEND="
 	x11-libs/gtk+:3[X]
 	media-libs/lcms
 	dev-libs/libxslt
-	=dev-libs/icu-72*:0"
+	=dev-libs/icu-73*:0"
 
 RDEPEND="${CDEPEND}
 	x11-misc/xdg-utils
@@ -146,6 +146,8 @@ src_install() {
 	doins ./usr/$(get_libdir)/chromium-browser/icudtl.dat
 
 	doins -r ./usr/$(get_libdir)/chromium-browser/locales
+
+	use widevine && dosym "../../usr/$(get_libdir)/chromium-browser/WidevineCdm" "${CHROMIUM_HOME}/WidevineCdm"
 
 	# Install icons and desktop entry
 	newicon -s 48 ./usr/share/icons/hicolor/256x256/apps/chromium-browser.png chromium-browser.png
