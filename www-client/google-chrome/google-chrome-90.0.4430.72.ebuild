@@ -1,11 +1,11 @@
-# Copyright 2011-2023 Gentoo Authors
+# Copyright 2011-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=8
+EAPI=7
 
-CHROMIUM_LANGS="af am ar bg bn ca cs da de el en-GB es es-419 et fa fi fil fr gu he
+CHROMIUM_LANGS="am ar bg bn ca cs da de el en-GB es es-419 et fa fi fil fr gu he
 	hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk sl sr
-	sv sw ta te th tr uk ur vi zh-CN zh-TW"
+	sv sw ta te th tr uk vi zh-CN zh-TW"
 
 inherit chromium-2 desktop pax-utils unpacker xdg
 
@@ -26,12 +26,14 @@ SRC_URI="https://dl.google.com/linux/chrome/deb/pool/main/g/${MY_PN}/${MY_P}_amd
 
 LICENSE="google-chrome"
 SLOT="0"
-IUSE="qt5 selinux"
+IUSE="selinux"
 RESTRICT="bindist mirror strip"
 
 RDEPEND="
-	>=app-accessibility/at-spi2-core-2.46.0:2
+	app-accessibility/at-spi2-atk:2
+	app-accessibility/at-spi2-core:2
 	app-misc/ca-certificates
+	dev-libs/atk
 	dev-libs/expat
 	dev-libs/glib:2
 	dev-libs/nspr
@@ -39,17 +41,12 @@ RDEPEND="
 	media-fonts/liberation-fonts
 	media-libs/alsa-lib
 	media-libs/mesa[gbm(+)]
-	net-misc/curl
 	net-print/cups
 	sys-apps/dbus
-	sys-libs/glibc
 	sys-libs/libcap
 	x11-libs/cairo
 	x11-libs/gdk-pixbuf:2
-	|| (
-		x11-libs/gtk+:3[X]
-		gui-libs/gtk:4[X]
-	)
+	x11-libs/gtk+:3[X]
 	x11-libs/libdrm
 	>=x11-libs/libX11-1.5.0
 	x11-libs/libXcomposite
@@ -62,11 +59,6 @@ RDEPEND="
 	x11-libs/libxshmfence
 	x11-libs/pango
 	x11-misc/xdg-utils
-	qt5? (
-		dev-qt/qtcore:5
-		dev-qt/qtgui:5[X]
-		dev-qt/qtwidgets:5
-	)
 	selinux? ( sec-policy/selinux-chromium )
 "
 
@@ -110,10 +102,6 @@ src_install() {
 	pushd "${CHROME_HOME}/locales" > /dev/null || die
 	chromium_remove_language_paks
 	popd > /dev/null || die
-
-	if ! use qt5; then
-		rm "${CHROME_HOME}/libqt5_shim.so" || die
-	fi
 
 	local suffix=
 	[[ ${PN} == google-chrome-beta ]] && suffix=_beta
