@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <remote-id type="github">FedeDP/Clight</remote-id>
+    </upstream>
+    <use>
+        <flag name="geoclue">Enable geolocation support through <pkg>app-misc/geoclue</pkg></flag>
+    </use>
+</pkgmetadata>

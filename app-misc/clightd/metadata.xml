@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <remote-id type="github">FedeDP/Clightd</remote-id>
+    </upstream>
+    <use>
+        <flag name="ddc">Enable ddcutil support</flag>
+        <flag name="dpms">Enable DPMS support</flag>
+        <flag name="gamma">Enable gamma support</flag>
+        <flag name="screen">Enable screen emitted backlight computation support</flag>
+        <flag name="pipewire">Enable pipewire camera sensor support</flag>
+        <flag name="yoctolight">Enable YoctoLight ALS devices support</flag>
+    </use>
+</pkgmetadata>
