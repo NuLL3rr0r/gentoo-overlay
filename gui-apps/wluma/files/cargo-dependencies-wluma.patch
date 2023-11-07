@@ -1,0 +1,144 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 22a0f9a..46ac33b 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -385,6 +385,12 @@ dependencies = [
+  "termcolor",
+ ]
+ 
++[[package]]
++name = "equivalent"
++version = "1.0.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
++
+ [[package]]
+ name = "float-cmp"
+ version = "0.9.0"
+@@ -444,6 +450,12 @@ version = "0.12.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
+ 
++[[package]]
++name = "hashbrown"
++version = "0.14.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "7dfda62a12f55daeae5015f81b0baea145391cb4520f86c248fc615d72640d12"
++
+ [[package]]
+ name = "hermit-abi"
+ version = "0.1.19"
+@@ -523,7 +535,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "1885e79c1fc4b10f0e172c475f458b7f7b93061064d98c3293e98c5ba0c8b399"
+ dependencies = [
+  "autocfg",
+- "hashbrown",
++ "hashbrown 0.12.3",
++]
++
++[[package]]
++name = "indexmap"
++version = "2.0.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "8adf3ddd720272c6ea8bf59463c04e0f93d0bbf7c5439b691bca2987e0270897"
++dependencies = [
++ "equivalent",
++ "hashbrown 0.14.1",
+ ]
+ 
+ [[package]]
+@@ -1013,6 +1035,15 @@ dependencies = [
+  "syn 1.0.109",
+ ]
+ 
++[[package]]
++name = "serde_spanned"
++version = "0.6.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "96426c9936fd7a0124915f9185ea1d20aa9445cc9821142f0a73bc9207a2e186"
++dependencies = [
++ "serde",
++]
++
+ [[package]]
+ name = "serde_yaml"
+ version = "0.7.5"
+@@ -1031,7 +1062,7 @@ version = "0.9.16"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "92b5b431e8907b50339b51223b97d102db8d987ced36f6e4d03621db9316c834"
+ dependencies = [
+- "indexmap",
++ "indexmap 1.9.2",
+  "itoa",
+  "ryu",
+  "serde",
+@@ -1144,19 +1175,36 @@ dependencies = [
+ 
+ [[package]]
+ name = "toml"
+-version = "0.5.9"
+-source = "git+https://github.com/HarveyHunt/toml?branch=dotted-table-parsing-toml#7db18be32494855199ed827ac389e161914bd20d"
++version = "0.8.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "185d8ab0dfbb35cf1399a6344d8484209c088f75f8f68230da55d48d95d43e3d"
+ dependencies = [
+  "serde",
++ "serde_spanned",
+  "toml_datetime",
++ "toml_edit",
+ ]
+ 
+ [[package]]
+ name = "toml_datetime"
+-version = "0.5.0"
+-source = "git+https://github.com/HarveyHunt/toml?branch=dotted-table-parsing-toml#7db18be32494855199ed827ac389e161914bd20d"
++version = "0.6.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "7cda73e2f1397b1262d6dfdcef8aafae14d1de7748d66822d3bfeeb6d03e5e4b"
++dependencies = [
++ "serde",
++]
++
++[[package]]
++name = "toml_edit"
++version = "0.20.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "396e4d48bbb2b7554c944bde63101b5ae446cff6ec4a24227428f15eb72ef338"
+ dependencies = [
++ "indexmap 2.0.2",
+  "serde",
++ "serde_spanned",
++ "toml_datetime",
++ "winnow",
+ ]
+ 
+ [[package]]
+@@ -1452,6 +1500,15 @@ version = "0.42.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "447660ad36a13288b1db4d4248e857b510e8c3a225c822ba4fb748c0aafecffd"
+ 
++[[package]]
++name = "winnow"
++version = "0.5.16"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "037711d82167854aff2018dfd193aa0fef5370f456732f0d5a0c59b0f1b4b907"
++dependencies = [
++ "memchr 2.5.0",
++]
++
+ [[package]]
+ name = "wluma"
+ version = "4.3.0"
+diff --git a/Cargo.toml b/Cargo.toml
+index eedc856..c833407 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -9,7 +9,7 @@ wayland-client = { version = "0.29.5", features = ["dlopen"] }
+ wayland-protocols = { version = "0.29.5", features = ["client", "unstable_protocols"] }
+ serde = { version = "1.0", features = ["derive"] }
+ serde_yaml = "0.9"
+-toml = { git = "https://github.com/HarveyHunt/toml", branch = "dotted-table-parsing-toml" }
++toml = "0.8.2"
+ chrono = "0.4"
+ ash = { version = "0.37.2", features = ["linked"], default-features = false }
+ itertools = "0.10"
