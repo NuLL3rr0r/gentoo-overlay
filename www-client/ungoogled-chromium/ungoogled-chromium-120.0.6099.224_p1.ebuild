@@ -23,8 +23,9 @@ inherit python-any-r1 qmake-utils readme.gentoo-r1 toolchain-funcs xdg-utils
 DESCRIPTION="Modifications to Chromium for removing Google integration and enhancing privacy"
 HOMEPAGE="https://github.com/ungoogled-software/ungoogled-chromium"
 PATCHSET_PPC64="118.0.5993.70-1raptor0~deb11u1"
+PATCH_V="${PV%%\.*}"
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV/_*}.tar.xz
-	https://gitlab.com/Matt.Jolly/chromium-patches/-/archive/${PV%%\.*}/chromium-patches-${PV%%\.*}.tar.bz2
+	https://gitlab.com/Matt.Jolly/chromium-patches/-/archive/${PATCH_V}/chromium-patches-${PATCH_V}.tar.bz2
 	ppc64? (
 		https://quickbuild.io/~raptor-engineering-public/+archive/ubuntu/chromium/+files/chromium_${PATCHSET_PPC64}.debian.tar.xz
 		https://deps.gentoo.zip/chromium-ppc64le-gentoo-patches-1.tar.xz
@@ -33,8 +34,9 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD uazo-bromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
-IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless hevc kerberos nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux system-abseil-cpp system-av1 system-brotli system-crc32c system-double-conversion system-ffmpeg +system-harfbuzz +system-icu +system-jsoncpp +system-libevent +system-libusb system-libvpx +system-openh264 system-openjpeg +system-png system-re2 +system-snappy system-woff2 +system-zstd thinlto uazo-bromite vaapi wayland widevine"
+# KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu +jsoncpp +libevent +libusb libvpx +openh264 openjpeg +png re2 +snappy woff2 +zstd"
+IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless hevc kerberos nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto uazo-bromite vaapi wayland widevine"
 RESTRICT="
 	!system-ffmpeg? ( proprietary-codecs? ( bindist ) )
 	!system-openh264? ( bindist )
@@ -54,13 +56,13 @@ REQUIRED_USE="
 	qt6? ( qt5 )
 "
 
-#UGC_COMMIT_ID="4f49976e25967232a0d83f87d8b9a5948ca3e0b8"
+UGC_COMMIT_ID="df372661ba3de7ac563c12227f9ec6e6fe221d84"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-UAZO_BROMITE_COMMIT_ID="99e6617f72b02b7c0dc555b20657bbdba3ed247f"
+UAZO_BROMITE_COMMIT_ID="dcbb3d0a3ba13fc2dcf1538fb5bdd2071c66234b"
 
 # CHROMIUM_COMMITS=(
 # 	5a8dfcaf84b5af5aeb738702651e98bfc43d6d45
@@ -97,6 +99,11 @@ fi
 
 SRC_URI+="uazo-bromite? ( https://github.com/uazo/cromite/archive/${UAZO_BROMITE_COMMIT_ID}.tar.gz -> cromite-${UAZO_BROMITE_COMMIT_ID}.tar.gz )
 "
+
+for i in ${IUSE_SYSTEM_LIBS}; do
+	[[ $i =~ ^(\+)?(.*)$ ]]
+	IUSE+=" ${BASH_REMATCH[1]}system-${BASH_REMATCH[2]}"
+done
 
 COMMON_X_DEPEND="
 	x11-libs/libXcomposite:=
@@ -239,9 +246,9 @@ BDEPEND="
 		qt6? ( dev-qt/qtbase:6 )
 	)
 	dev-lang/perl
-	>=dev-util/gn-0.2114
+	>=dev-build/gn-0.2114
 	>=dev-util/gperf-3.0.3
-	>=dev-util/ninja-1.7.2
+	>=dev-build/ninja-1.7.2
 	dev-vcs/git
 	>=net-libs/nodejs-7.6.0[inspector]
 	>=sys-devel/bison-2.4.3
@@ -367,16 +374,16 @@ src_prepare() {
 	python_setup
 
 	if ! use custom-cflags; then #See #25 #92
-		sed -i '/default_stack_frames/Q' ${WORKDIR}/chromium-patches-${PV%%.*}/chromium-*-compiler.patch || die
+		sed -i '/default_stack_frames/Q' ${WORKDIR}/chromium-patches-${PATCH_V}/chromium-*-compiler.patch || die
 	fi
 
 	# disable global media controls, crashes with libstdc++
 	sed -i -e \
-		"/\"GlobalMediaControlsCastStartStop\",/{n;s/ENABLED/DISABLED/;}" \
+		"/\"GlobalMediaControlsCastStartStop\"/,+4{s/ENABLED/DISABLED/;}" \
 		"chrome/browser/media/router/media_router_feature.cc" || die
 
 	local PATCHES=(
-		"${WORKDIR}/chromium-patches-${PV%%.*}"
+		"${WORKDIR}/chromium-patches-${PATCH_V}"
 		"${FILESDIR}/chromium-cross-compile.patch"
 		"${FILESDIR}/chromium-use-oauth2-client-switches-as-default.patch"
 		"${FILESDIR}/chromium-108-EnumTable-crash.patch"
@@ -408,6 +415,10 @@ src_prepare() {
 		PATCHES+=( "${WORKDIR}/ppc64le" )
 	fi
 
+	if has_version ">=dev-libs/icu-74.1" && use system-icu ; then
+		PATCHES+=( "${FILESDIR}/chromium-119.0.6045.159-icu-74.patch" )
+	fi
+
 	default
 
 	if use uazo-bromite ; then
@@ -422,6 +433,7 @@ src_prepare() {
 			"${BR_PA_PATH}/Add-flag-to-configure-maximum-connections-per-host.patch"
 			"${BR_PA_PATH}/Add-a-proxy-configuration-page.patch"
 			"${BR_PA_PATH}/Offer-builtin-autocomplete-for-chrome-flags.patch"
+			"${BR_PA_PATH}/Enable-StrictOriginIsolation-and-SitePerProcess.patch"
 			"${BR_PA_PATH}/Disable-requests-for-single-word-Omnibar-searches.patch"
 			"${BR_PA_PATH}/Reduce-HTTP-headers-in-DoH-requests-to-bare-minimum.patch"
 			"${BR_PA_PATH}/Hardening-against-incognito-mode-detection.patch"
@@ -447,7 +459,6 @@ src_prepare() {
 			"${BR_PA_PATH}/00Remove-support-for-device-memory-and-cpu-recovery.patch"
 			"${BR_PA_PATH}/00Disable-Feeback-Collector.patch"
 			"${BR_PA_PATH}/00Disable-remote-altsvc-for-h3-connections.patch"
-			"${BR_PA_PATH}/00Disable-PartnerCustomizations.patch"
 		)
 		for i in "${BROMITE_PATCHES[@]}"; do
 			if [[ "$i" =~ "Add-autoplay-site-setting.patch" ]] ||
@@ -467,12 +478,11 @@ src_prepare() {
 
 	# adjust python interpreter version
 	sed -i -e "s|\(^script_executable = \).*|\1\"${EPYTHON}\"|g" .gn || die
-	sed -i -e "s|vpython3|${EPYTHON}|g" testing/xvfb.py || die
 
 	cp "${FILESDIR}/libusb.gn" build/linux/unbundle || die
 	sed -i '/^REPLACEMENTS.*$/{s++REPLACEMENTS = {"libusb":"third_party/libusb/BUILD.gn",+;h};${x;/./{x;q0};x;q1}' \
 		build/linux/unbundle/replace_gn_files.py || die
-	sed -i '/^.*deps.*third_party\/jsoncpp.*$/{s++public_deps = [ "//third_party/jsoncpp" ]+;h};${x;/./{x;q0};x;q1}' \
+	sed -i '/^.*deps.*third_party\/jsoncpp.*$/{s++public_deps \+= [ "//third_party/jsoncpp" ]+;h};${x;/./{x;q0};x;q1}' \
 		third_party/webrtc/rtc_base/BUILD.gn || die
 
 	use bluetooth || eapply "${FILESDIR}/disable-bluez.patch"
@@ -621,6 +631,7 @@ src_prepare() {
 	)
 	keeplibs+=(
 		third_party/angle/src/third_party/volk
+		third_party/anonymous_tokens
 		third_party/apple_apsl
 		third_party/axe-core
 		third_party/blink
@@ -674,6 +685,7 @@ src_prepare() {
 		third_party/devtools-frontend/src/front_end/third_party/axe-core
 		third_party/devtools-frontend/src/front_end/third_party/chromium
 		third_party/devtools-frontend/src/front_end/third_party/codemirror
+		third_party/devtools-frontend/src/front_end/third_party/csp_evaluator
 		third_party/devtools-frontend/src/front_end/third_party/diff
 		third_party/devtools-frontend/src/front_end/third_party/i18n
 		third_party/devtools-frontend/src/front_end/third_party/intl-messageformat
@@ -773,7 +785,7 @@ src_prepare() {
 		third_party/omnibox_proto
 		third_party/one_euro_filter
 		third_party/openscreen
-		third_party/openscreen/src/third_party/mozilla
+		third_party/openscreen/src/third_party/
 		third_party/openscreen/src/third_party/tinycbor/src/src
 		third_party/ots
 		third_party/pdfium
@@ -829,6 +841,7 @@ src_prepare() {
 		third_party/tflite
 		third_party/tflite/src/third_party/eigen3
 		third_party/tflite/src/third_party/fft2d
+		third_party/tflite/src/third_party/xla/third_party/tsl
 		third_party/ruy
 		third_party/six
 		third_party/ukey2
@@ -870,6 +883,9 @@ src_prepare() {
 		third_party/usb_ids
 		third_party/xdg-utils
 	)
+	if ! use system-harfbuzz; then
+		keeplibs+=( third_party/harfbuzz-ng )
+	fi
 	if ! use system-ffmpeg; then
 		keeplibs+=( third_party/ffmpeg third_party/opus )
 	fi
@@ -891,9 +907,6 @@ src_prepare() {
 			third_party/libaom/source/libaom/third_party/vector
 			third_party/libaom/source/libaom/third_party/x86inc
 		)
-	fi
-	if ! use system-harfbuzz; then
-		keeplibs+=( third_party/harfbuzz-ng )
 	fi
 	if ! use system-openh264; then
 		keeplibs+=( third_party/openh264 )
@@ -932,6 +945,9 @@ src_prepare() {
 	# bundled eu-strip is for amd64 only and we don't want to pre-stripped binaries
 	mkdir -p buildtools/third_party/eu-strip/bin || die
 	ln -s "${EPREFIX}"/bin/true buildtools/third_party/eu-strip/bin/eu-strip || die
+
+	ebegin "Fix compatibility with libstdc++"
+	eapply "${FILESDIR}/chromium-120-libstdc++.patch"
 }
 
 src_configure() {
@@ -1011,12 +1027,24 @@ src_configure() {
 	myconf_gn+=" enable_rust=false"
 
 	# GN needs explicit config for Debug/Release as opposed to inferring it from build directory.
-	myconf_gn+=" is_debug=false"
+	myconf_gn+=" is_debug=$(usex debug true false)"
 
 	# enable DCHECK with USE=debug only, increases chrome binary size by 30%, bug #811138.
 	# DCHECK is fatal by default, make it configurable at runtime, #bug 807881.
 	myconf_gn+=" dcheck_always_on=$(usex debug true false)"
 	myconf_gn+=" dcheck_is_configurable=$(usex debug true false)"
+
+	myconf_gn+=" enable_iterator_debugging=$(usex debug true false)"
+
+	if use debug; then
+		myconf_gn+=" symbol_level=2"
+		myconf_gn+=" blink_symbol_level=2"
+		myconf_gn+=" v8_symbol_level=2"
+	else
+		myconf_gn+=" symbol_level=0"
+		myconf_gn+=" blink_symbol_level=0"
+		myconf_gn+=" v8_symbol_level=0"
+	fi
 
 	# Component build isn't generally intended for use by end users. It's mostly useful
 	# for development and debugging.
@@ -1181,10 +1209,7 @@ src_configure() {
 	myconf_gn+=" use_official_google_api_keys=false"
 	myconf_gn+=" use_unofficial_version_number=false"
 
-	myconf_gn+=" blink_symbol_level=0"
-	myconf_gn+=" symbol_level=0"
-	myconf_gn+=" enable_iterator_debugging=false"
-	myconf_gn+=" enable_swiftshader=false"
+	# myconf_gn+=" enable_swiftshader=false"
 
 	# Additional flags
 	myconf_gn+=" perfetto_use_system_zlib=true"
@@ -1226,7 +1251,18 @@ src_configure() {
 
 		if tc-is-gcc; then
 			# https://bugs.gentoo.org/904455
-			append-cxxflags "$(test-flags-CXX -fno-tree-vectorize)"
+			local -x CPP="$(tc-getCXX) -E"
+			local gcc_version="$(gcc-version)"
+			local need_gcc_fix=false
+			# Drop this complexity as gcc versions age out of ::gentoo
+			if ver_test "${gcc_version}" -lt 12.3; then
+				need_gcc_fix=true
+			elif ver_test "${gcc_version}" -ge 13 && ver_test "${gcc_version}" -lt 13.2; then
+				need_gcc_fix=true
+			fi
+			[[ ${need_gcc_fix} = true ]] && append-cxxflags "$(test-flags-CXX -fno-tree-vectorize)"
+			# https://bugs.gentoo.org/912381
+			filter-lto
 		fi
 	fi
 
@@ -1307,6 +1343,9 @@ src_configure() {
 		myconf_gn+=" icu_use_data_file=false"
 	fi
 
+	# Don't need nocompile checks and GN crashes with our config
+	myconf_gn+=" enable_nocompile_tests=false enable_nocompile_tests_new=false"
+
 	# Enable ozone wayland and/or headless support
 	myconf_gn+=" use_ozone=true ozone_auto_platforms=false"
 	myconf_gn+=" ozone_platform_headless=true"
@@ -1365,8 +1404,6 @@ src_configure() {
 		# Allow building against system libraries in official builds
 		sed -i 's/OFFICIAL_BUILD/GOOGLE_CHROME_BUILD/' \
 			tools/generate_shim_headers/generate_shim_headers.py || die
-		# Don't add symbols to build
-		myconf_gn+=" symbol_level=0"
 	else
 		myconf_gn+=" devtools_skip_typecheck=false"
 	fi
@@ -1394,7 +1431,7 @@ src_configure() {
 		einfo "  ${flags} = \"${!flags}\""
 	done
 
-	einfo "Configuring Chromium..."
+	einfo "Configuring Chromium ..."
 	set -- gn gen --args="${myconf_gn} ${EXTRA_GN}" out/Release
 	echo "$@"
 	"$@" || die
@@ -1463,9 +1500,9 @@ src_compile() {
 		out/Release/chromium-browser-chromium.desktop || die
 
 	# Build vk_swiftshader_icd.json; bug #827861
-	#sed -e 's|${ICD_LIBRARY_PATH}|./libvk_swiftshader.so|g' \
-	#	third_party/swiftshader/src/Vulkan/vk_swiftshader_icd.json.tmpl > \
-	#	out/Release/vk_swiftshader_icd.json || die
+	sed -e 's|${ICD_LIBRARY_PATH}|./libvk_swiftshader.so|g' \
+		third_party/swiftshader/src/Vulkan/vk_swiftshader_icd.json.tmpl > \
+		out/Release/vk_swiftshader_icd.json || die
 }
 
 src_install() {
@@ -1535,12 +1572,12 @@ src_install() {
 	#doins -r out/Release/MEIPreload
 
 	# Install vk_swiftshader_icd.json; bug #827861
-	#doins out/Release/vk_swiftshader_icd.json
+	doins out/Release/vk_swiftshader_icd.json
 
-	#if [[ -d out/Release/swiftshader ]]; then
-	#	insinto "${CHROMIUM_HOME}/swiftshader"
-	#	doins out/Release/swiftshader/*.so
-	#fi
+	if [[ -d out/Release/swiftshader ]]; then
+		insinto "${CHROMIUM_HOME}/swiftshader"
+		doins out/Release/swiftshader/*.so
+	fi
 
 	use widevine && dosym WidevineCdm/_platform_specific/linux_x64/libwidevinecdm.so /usr/$(get_libdir)/chromium-browser/libwidevinecdm.so
 
