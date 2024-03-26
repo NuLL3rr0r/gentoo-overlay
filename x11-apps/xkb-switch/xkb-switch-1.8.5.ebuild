@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=7
+EAPI=8
 
 inherit cmake multilib
 
@@ -21,5 +21,6 @@ RDEPEND="${DEPEND}"
 src_prepare() {
 	# multilib-strict
 	sed -i -e "s/DESTINATION lib/DESTINATION $(get_libdir)/" CMakeLists.txt
+	cmake_src_prepare
 	default
 }
