@@ -1,0 +1,12 @@
+diff --git a/alvr/xtask/src/dependencies.rs b/alvr/xtask/src/dependencies.rs
+index c07f795..d5de14e 100644
+--- a/alvr/xtask/src/dependencies.rs
++++ b/alvr/xtask/src/dependencies.rs
+@@ -131,7 +131,6 @@ pub fn build_ffmpeg_linux(nvenc_flag: bool) {
+         "--enable-vulkan",
+         "--enable-libdrm",
+         "--enable-pic",
+-        "--enable-rpath",
+         "--fatal-warnings",
+     ];
+     let install_prefix = format!("--prefix={}", final_path.join("alvr_build").display());
