@@ -50,10 +50,6 @@ CDEPEND="
 	media-libs/freetype
 	media-libs/libjpeg-turbo
 	media-libs/libpng
-	|| (
-		media-sound/pulseaudio
-		>=media-sound/apulse-0.1.9
-	)
 	sys-apps/dbus
 	sys-apps/pciutils
 	virtual/udev
@@ -65,16 +61,12 @@ CDEPEND="
 	app-accessibility/at-spi2-core
 	x11-libs/gtk+:3[X]
 	media-libs/lcms
-	dev-libs/libxslt
-	=dev-libs/icu-73*:0"
+	dev-libs/libxslt"
 
 RDEPEND="${CDEPEND}
 	x11-misc/xdg-utils
 	virtual/opengl
-	virtual/ttf-fonts
-	!www-client/chromium
-	!www-client/chromium-bin
-	!www-client/ungoogled-chromium"
+	virtual/ttf-fonts"
 
 DISABLE_AUTOFORMATTING="yes"
 DOC_CONTENTS="
@@ -119,21 +111,19 @@ src_install() {
 		doexe ./usr/$(get_libdir)/chromium-browser/convert_dict
 	fi
 
-	if  has_version ">=media-sound/apulse-0.1.9" ; then
-	   sed -i 's/exec -a "chromium-browser"/exec -a "chromium-browser" apulse/' ./usr/$(get_libdir)/chromium-browser/chromium-launcher.sh
-	fi
-
 	doexe ./usr/$(get_libdir)/chromium-browser/chromium-launcher.sh
 
 	# It is important that we name the target "chromium-browser",
 	# xdg-utils expect it; bug #355517.
-	dosym "${CHROMIUM_HOME}/chromium-launcher.sh" /usr/bin/chromium-browser
+	dosym "${CHROMIUM_HOME}/chromium-launcher.sh" /usr/bin/chromium-browser-bin
 	# keep the old symlink around for consistency
-	dosym "${CHROMIUM_HOME}/chromium-launcher.sh" /usr/bin/chromium
+	dosym "${CHROMIUM_HOME}/chromium-launcher.sh" /usr/bin/chromium-bin
 
-	# Allow users to override command-line options, bug #357629.
-	insinto /etc/chromium
-	doins ./etc/chromium/default
+	if ! has_version "www-client/ungoogled-chromium" && ! has_version "www-client/chromium"; then
+		# Allow users to override command-line options, bug #357629.
+		insinto /etc/chromium
+		doins ./etc/chromium/default
+	fi
 
 	pushd ./usr/$(get_libdir)/chromium-browser/locales > /dev/null || die
 	chromium_remove_language_paks
@@ -147,26 +137,46 @@ src_install() {
 
 	doins -r ./usr/$(get_libdir)/chromium-browser/locales
 
+	# Install vk_swiftshader_icd.json; bug #827861
+	doins ./usr/$(get_libdir)/chromium-browser/vk_swiftshader_icd.json
+
+	if [[ -d out/Release/swiftshader ]]; then
+		insinto "${CHROMIUM_HOME}/swiftshader"
+		doins ./usr/$(get_libdir)/chromium-browser/swiftshader/*.so
+	fi
+
 	use widevine && dosym "../../usr/$(get_libdir)/chromium-browser/WidevineCdm" "${CHROMIUM_HOME}/WidevineCdm"
 
-	# Install icons and desktop entry
-	newicon -s 48 ./usr/share/icons/hicolor/256x256/apps/chromium-browser.png chromium-browser.png
+	# Install icons
+	local branding size
+	for size in 16 24 32 48 64 128 256 ; do
+		newicon -s ${size} "./usr/share/icons/hicolor/${size}x${size}/apps/chromium-browser.png" \
+			chromium-browser-bin.png
+	done
+
+	local desktop_entry_name="Chromium"
+	if has_version "www-client/ungoogled-chromium" || has_version "www-client/chromium"; then
+		# Differentiate if others installed
+		desktop_entry_name="Ungoogled"
+	fi
 
 	local mime_types="text/html;text/xml;application/xhtml+xml;"
 	mime_types+="x-scheme-handler/http;x-scheme-handler/https;" # bug #360797
 	mime_types+="x-scheme-handler/ftp;" # bug #412185
 	mime_types+="x-scheme-handler/mailto;x-scheme-handler/webcal;" # bug #416393
 	make_desktop_entry \
-		chromium-browser \
-		"Chromium" \
-		chromium-browser \
+		chromium-browser-bin \
+		"${desktop_entry_name}" \
+		chromium-browser-bin \
 		"Network;WebBrowser" \
-		"MimeType=${mime_types}\nStartupWMClass=chromium-browser"
+		"MimeType=${mime_types}\nStartupWMClass=chromium-browser-bin"
 	sed -e "/^Exec/s/$/ %U/" -i "${ED}"/usr/share/applications/*.desktop || die
 
 	# Install GNOME default application entry (bug #303100).
 	insinto /usr/share/gnome-control-center/default-apps
-	doins ./usr/share/gnome-control-center/default-apps/chromium-browser.xml
+	sed -i '/chromium-browser/{s++chromium-browser-bin+;h};${x;/./{x;q0};x;q1}' \
+			./usr/share/gnome-control-center/default-apps/chromium-browser.xml || die
+	newins ./usr/share/gnome-control-center/default-apps/chromium-browser.xml chromium-browser-bin.xml
 
 	readme.gentoo_create_doc
 }
