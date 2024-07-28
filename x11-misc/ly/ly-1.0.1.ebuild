@@ -142,3 +142,15 @@ src_install() {
 	use runit && ezig_build installrunit
 	use systemd && ezig_build installsystemd
 }
+
+pkg_postinst() {
+	elog "IMPORTANT NOTE:"
+	elog ""
+	elog "In order to avoid respawning a console on top of Ly tty (default is 2), either:"
+	elog ""
+	elog "$ rc-update del agetty.tty2"
+	elog ""
+	elog "Or, comment the following line inside /etc/inittab:"
+	elog ""
+	elog "#c2:2345:respawn:/sbin/agetty 38400 tty2 linux"
+}
