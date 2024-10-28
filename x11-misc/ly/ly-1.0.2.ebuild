@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 2022-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -6,18 +6,18 @@ EAPI=8
 inherit edo
 
 # From: https://github.com/fairyglade/ly/blob/v<ly version>/build.zig.zon
-CLAP_COMMIT="8c98e6404b22aafc0184e999d8f068b81cc22fa1"
-ZIGINI_COMMIT="ce1f322482099db058f5d9fdd05fbfa255d79723"
-# From: https://github.com/Kawaii-Ash/zigini/blob/<zigini commit>/build.zig.zon
-INI_COMMIT="19e1210063882ab7db73a8aaa60e733d4aaafe9f"
+CLAP_REF="refs/tags/0.9.1"
+ZIGINI_REF="0bba97a12582928e097f4074cc746c43351ba4c8"
+# From: https://github.com/Kawaii-Ash/zigini/blob/<zigini ref>/build.zig.zon
+INI_REF="e18d36665905c1e7ba0c1ce3e8780076b33e3002"
 
 DESCRIPTION="a TUI display manager"
 HOMEPAGE="https://github.com/fairyglade/ly"
 SRC_URI="
 	https://github.com/fairyglade/ly/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
-	https://github.com/Hejsil/zig-clap/archive/${CLAP_COMMIT}.tar.gz -> zig-clap-${CLAP_COMMIT}.tar.gz
-	https://github.com/Kawaii-Ash/zigini/archive/${ZIGINI_COMMIT}.tar.gz -> zigini-${ZIGINI_COMMIT}.tar.gz
-	https://github.com/ziglibs/ini/archive/${INI_COMMIT}.tar.gz -> ziglibs-ini-${INI_COMMIT}.tar.gz
+	https://github.com/Hejsil/zig-clap/archive/${CLAP_REF}.tar.gz -> zig-clap-${CLAP_REF##*/}.gh.tar.gz
+	https://github.com/Kawaii-Ash/zigini/archive/${ZIGINI_REF}.tar.gz -> zigini-${ZIGINI_REF##*/}.gh.tar.gz
+	https://github.com/ziglibs/ini/archive/${INI_REF}.tar.gz -> ziglibs-ini-${INI_REF##*/}.gh.tar.gz
 "
 
 LICENSE="WTFPL-2"
@@ -26,7 +26,7 @@ KEYWORDS="~amd64"
 IUSE="openrc runit systemd"
 
 EZIG_MIN="0.12"
-EZIG_MAX_EXCLUSIVE="0.13"
+EZIG_MAX_EXCLUSIVE="0.14"
 
 DEPEND="
 	sys-libs/ncurses:=
@@ -51,6 +51,8 @@ BDEPEND="
 		<dev-lang/zig-bin-${EZIG_MAX_EXCLUSIVE}
 	)
 "
+
+PATCHES=( "${FILESDIR}/${P}-support-zig-0.13.0.patch" )
 
 # Set the EZIG environment variable.
 # Copied from:
@@ -128,9 +130,9 @@ pkg_setup() {
 src_unpack() {
 	default
 
-	ezig fetch "${WORKDIR}/zig-clap-${CLAP_COMMIT}"
-	ezig fetch "${WORKDIR}/zigini-${ZIGINI_COMMIT}"
-	ezig fetch "${WORKDIR}/ini-${INI_COMMIT}"
+	ezig fetch "${WORKDIR}/zig-clap-${CLAP_REF##*/}"
+	ezig fetch "${WORKDIR}/zigini-${ZIGINI_REF##*/}"
+	ezig fetch "${WORKDIR}/ini-${INI_REF##*/}"
 }
 
 src_compile() {
@@ -141,16 +143,4 @@ src_install() {
 	use openrc && ezig_build installopenrc
 	use runit && ezig_build installrunit
 	use systemd && ezig_build installsystemd
-}
-
-pkg_postinst() {
-	elog "IMPORTANT NOTE:"
-	elog ""
-	elog "In order to avoid respawning a console on top of Ly tty (default is 2), either:"
-	elog ""
-	elog "$ rc-update del agetty.tty2"
-	elog ""
-	elog "Or, comment the following line inside /etc/inittab:"
-	elog ""
-	elog "#c2:2345:respawn:/sbin/agetty 38400 tty2 linux"
 }
