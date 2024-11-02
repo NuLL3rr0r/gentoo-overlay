@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{10..12} )
 inherit readme.gentoo-r1 pam python-any-r1 systemd xdg-utils
 
-MY_PN="VMware-Workstation-Full"
+MY_PN="VMware-Workstation"
 MY_PV=$(ver_cut 1-3)
 PV_MODULES="${MY_PV}"
 PV_BUILD=$(ver_cut 4)
