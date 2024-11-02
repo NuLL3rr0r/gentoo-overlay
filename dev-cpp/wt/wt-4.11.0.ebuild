@@ -51,7 +51,7 @@ DEPEND="
 		app-text/asciidoc
 		app-doc/doxygen
 	)
-	>=dev-util/cmake-3.1.0
+	>=dev-build/cmake-3.13.0
 	${RDEPEND}
 	"
 
