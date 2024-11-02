@@ -45,7 +45,7 @@ RDEPEND="
 BDEPEND="
 	${DEPEND}
 	>=dev-libs/libmodule-5.0.0
-	dev-util/cmake
+	dev-build/cmake
 	sys-apps/dbus
 	virtual/pkgconfig
 	bash-completion? ( app-shells/bash-completion )
