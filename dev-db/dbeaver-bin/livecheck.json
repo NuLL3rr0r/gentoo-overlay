@@ -1,5 +1,1 @@
-{
-  "type": "regex",
-  "regex": "\"/files/([^/]+)/\"",
-  "url": "https://dbeaver.io/files/"
-}
+{"regex":"\"/files/([^/]+)/\"","type":"regex","url":"https://dbeaver.io/files/"}
