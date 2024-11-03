@@ -1,0 +1,11 @@
+--- a/src/net.cpp	2024-06-14 12:31:22.686604342 +0200
++++ b/src/net.cpp	2024-06-14 12:32:33.422604941 +0200
+@@ -1167,7 +1167,7 @@
+     struct IGDdatas data;
+     int r;
+ 
+-    r = UPNP_GetValidIGD(devlist, &urls, &data, lanaddr, sizeof(lanaddr));
++    r = UPNP_GetValidIGD(devlist, &urls, &data, nullptr, 0, lanaddr, sizeof(lanaddr));
+     if (r == 1)
+     {
+         if (fDiscover) {
