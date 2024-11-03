@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <bugs-to>https://github.com/larmedina75/pulseaudio-equalizer-ladspa/issues</bugs-to>
+        <remote-id type="github">larmedina75/pulseaudio-equalizer-ladspa</remote-id>
+    </upstream>
+    <longdescription lang="en">
+        Pulseaudio LADSPA Equalizer
+    </longdescription>
+</pkgmetadata>
+
