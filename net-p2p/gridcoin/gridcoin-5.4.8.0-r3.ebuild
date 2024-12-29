@@ -39,7 +39,7 @@ RDEPEND="
 		acct-group/gridcoin
 		acct-user/gridcoin[boinc=]
 	)
-	dev-libs/boost
+	<dev-libs/boost-1.87.0
 	dev-libs/openssl-compat:1.1.1
 	dev-libs/libzip
 	sys-libs/db:5.3[cxx]
