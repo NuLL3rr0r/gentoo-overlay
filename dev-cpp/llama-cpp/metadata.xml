@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <upstream>
+        <remote-id type="github">ggerganov/llama.cpp</remote-id>
+        <bugs-to>https://github.com/ggerganov/llama.cpp/issues</bugs-to>
+        <doc>https://github.com/ggerganov/llama.cpp/tree/master/docs</doc>
+    </upstream>
+</pkgmetadata>
