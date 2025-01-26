@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<maintainer type="person">
+    <maintainer type="person">
         <email>info@babaei.net</email>
         <name>Mamadou Babaei</name>
-	</maintainer>
-	<upstream>
-		<remote-id type="github">ungoogled-software/ungoogled-chromium</remote-id>
-		<bugs-to>https://github.com/ungoogled-software/ungoogled-chromium</bugs-to>
-		<doc>https://ungoogled-software.github.io/ungoogled-chromium-wiki/</doc>
-	</upstream>
-	<longdescription>
-		ungoogled-chromium is Google Chromium, sans integration with Google.
-		It also features some tweaks to enhance privacy, control, and
-		transparency (almost all of which require manual activation or enabling).
+    </maintainer>
+    <upstream>
+        <remote-id type="github">ungoogled-software/ungoogled-chromium</remote-id>
+        <bugs-to>https://github.com/ungoogled-software/ungoogled-chromium/issues</bugs-to>
+        <doc>https://ungoogled-software.github.io/ungoogled-chromium-wiki/</doc>
+    </upstream>
+    <longdescription>
+        ungoogled-chromium is Google Chromium, sans integration with Google.
+        It also features some tweaks to enhance privacy, control, and
+        transparency (almost all of which require manual activation or enabling).
 
-		ungoogled-chromium retains the default Chromium experience as closely as
-		possible. Unlike other Chromium forks that have their own visions of a
-		web browser, ungoogled-chromium is essentially a drop-in replacement for
-		Chromium.
-	</longdescription>
-	<use>
-		<flag name="convert-dict">Install also the convert_dict utility. The script will be installed into /opt/chromium-browser/update-dicts.sh More info here: https://github.com/ungoogled-software/ungoogled-chromium/issues/188#issuecomment-444752907</flag>
-		<flag name="widevine">Unsupported closed-source DRM capability (required by Netflix VOD)</flag>
-	</use>
+        ungoogled-chromium retains the default Chromium experience as closely as
+        possible. Unlike other Chromium forks that have their own visions of a
+        web browser, ungoogled-chromium is essentially a drop-in replacement for
+        Chromium.
+    </longdescription>
+    <use>
+        <flag name="convert-dict">Install also the convert_dict utility. The script will be installed into /opt/chromium-browser/update-dicts.sh More info here: https://github.com/ungoogled-software/ungoogled-chromium/issues/188#issuecomment-444752907</flag>
+        <flag name="widevine">Unsupported closed-source DRM capability (required by Netflix VOD)</flag>
+    </use>
 </pkgmetadata>
