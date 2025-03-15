@@ -6,9 +6,10 @@ EAPI=8
 PYTHON_COMPAT=( python3_{11..13} )
 PYTHON_REQ_USE="xml(+)"
 
-CHROMIUM_LANGS="af am ar bg bn ca cs da de el en-GB es es-419 et fa fi fil fr gu he
-	hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt-BR pt-PT ro ru sk sl sr
-	sv sw ta te th tr uk ur vi zh-CN zh-TW"
+CHROMIUM_LANGS="af am ar as az be bg bn bs ca cs cy da de el en-GB es es-419 et eu fa fi fil
+	fr fr-CA gl gu he hi hr hu hy id is it ja ka kk km kn ko ky lo lt lv mk ml mn mr ms my
+	nb ne nl or pa pl pt-BR pt-PT ro ru si sk sl sq sr sr-Latn sv sw ta te th tr uk ur uz
+	vi zh-CN zh-HK zh-TW zu"
 
 inherit check-reqs chromium-2 desktop flag-o-matic llvm ninja-utils pax-utils
 inherit python-any-r1 qmake-utils readme.gentoo-r1 toolchain-funcs xdg-utils
@@ -29,6 +30,8 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 		https://deps.gentoo.zip/chromium-ppc64le-gentoo-patches-1.tar.xz
 	)
 "
+# Gentoo tarball:
+# https://chromium-tarballs.distfiles.gentoo.org/chromium-${PV/_*}.tar.xz -> chromium-${PV/_*}-gentoo.tar.xz
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
@@ -54,19 +57,26 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="1b11ca4600fc48faaa77260d53e20e259c0ee180"
+#UGC_COMMIT_ID="0b5e4035314cb3da8956526db31806771ddf1238"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="c609027f1a1a0961bb668668edd866e741579109"
+CROMITE_COMMIT_ID="eae1e049fa1afb405bd1debdebdbbd407af6d2ac"
 
 declare -A CHROMIUM_COMMITS=(
 	["587c2cf8b11d3c32fa26887063eda3171a3d353e"]="third_party/ruy/src"
-	["5c1e85eb085658187f4475ff5e56962473b6f10a"]="." #129+
-	["011c56ecf0120d3bfd56327d5a115cd55f179da6"]="." #129+
-	["fa382322809185a22a6b3614f425b05f95d8d526"]="." #129+
+	["-84fcdd0620a72aa73ea521c682fb246067f2c14d"]="."
+	["dc9db222b929f5da415216134b77d7f3bf141813"]="." #131+
+	["7e28832cd3320d2b603e6ef9468581e1c65c14f1"]="." #131+
+	["b51da416e04ecc9edafff531f9678c6404e654b7"]="." #131+
+	["4c49d7f04f43ab4757637cac21cfef7c0cd060fc"]="." #131+
+	["47fb59539e5744467eb6f7aae52f5a169910d56c"]="." #131+
+	["39583ff118920284de516d262979960e7159bcfc"]="." #131+
+	["c502d310d8cb91f1c1098a7287e75114023e57f0"]="." #131+
+	["40c273b2c0f5f26e16e67428ceaafd8b339bb61f"]="." #131+
+	["8739a5b33176e82e06a746163c0c76de4908ced9"]="." #131+
 )
 
 UGC_PV="${PV/_p/-}"
@@ -183,9 +193,10 @@ COMMON_SNAPSHOT_DEPEND="
 		kerberos? ( virtual/krb5 )
 		vaapi? ( >=media-libs/libva-2.7:=[X?,wayland?] )
 		X? (
+			x11-base/xorg-proto:=
 			x11-libs/libX11:=
-			x11-libs/libXext:=
 			x11-libs/libxcb:=
+			x11-libs/libXext:=
 		)
 		x11-libs/libxkbcommon:=
 		wayland? (
@@ -388,7 +399,7 @@ pkg_pretend() {
 	if use headless; then
 		local headless_unused_flags=("cups" "kerberos" "pulseaudio" "qt5" "qt6" "vaapi" "wayland")
 		for myiuse in ${headless_unused_flags[@]}; do
-			use ${myiuse} && ewarn "Ignoring USE=${myiuse} since USE=headless is set."
+			use ${myiuse} && ewarn "Ignoring USE=${myiuse}, USE=headless is set."
 		done
 	fi
 }
@@ -421,8 +432,9 @@ src_unpack() {
 	fi
 
 	einfo "Unpacking chromium-${PV/_*}.tar.xz to ${WORKDIR}"
-	tar ${XCLD} \
-		-xf "${DISTDIR}/chromium-${PV/_*}.tar.xz" -C "${WORKDIR}" || die
+	# Gentoo tarball:
+	# tar ${XCLD} -xf "${DISTDIR}/chromium-${PV/_*}-gentoo.tar.xz" -C "${WORKDIR}" || die
+	tar ${XCLD} -xf "${DISTDIR}/chromium-${PV/_*}.tar.xz" -C "${WORKDIR}" || die
 
 	unpack ${UGC_URL#*->}
 	# Warned you!
@@ -441,8 +453,6 @@ src_prepare() {
 	# Calling this here supports resumption via FEATURES=keepwork
 	python_setup
 
-	SRC_PREPARE_PATCHES_FAILED=0
-
 	cp -f "${FILESDIR}/compiler.patch" "${T}"
 	if ! use custom-cflags; then #See #25 #92
 		sed -i '/default_stack_frames/Q' "${T}/compiler.patch" || die
@@ -451,7 +461,7 @@ src_prepare() {
 	# disable global media controls, crashes with libstdc++
 	sed -i -e \
 		"/\"GlobalMediaControlsCastStartStop\"/,+4{s/ENABLED/DISABLED/;}" \
-		"chrome/browser/media/router/media_router_feature.cc" || die
+		"chrome/browser/media/router/media_router_feature.cc"
 
 	local PATCHES=(
 		"${T}/compiler.patch"
@@ -465,13 +475,10 @@ src_prepare() {
 		"${FILESDIR}/perfetto-system-zlib.patch"
 		"${FILESDIR}/chromium-127-cargo_crate.patch"
 		"${FILESDIR}/chromium-127-crabby.patch"
-		"${FILESDIR}/chromium-127-ui_lens.patch"
 		"${FILESDIR}/chromium-128-gtk-fix-prefers-color-scheme-query.patch"
-		"${FILESDIR}/chromium-128-profile_invalidation.patch" #129+
-		"${FILESDIR}/chromium-128-cloud_management.patch" #129+
-		"${FILESDIR}/chromium-128-fontations.patch"
 		"${FILESDIR}/chromium-128-cfi-split-lto-unit.patch"
-		"${FILESDIR}/fix-official.patch"
+		"${FILESDIR}/chromium-130-fontations.patch"
+		"${FILESDIR}/chromium-129-no-link-builtins.patch"
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-127-separate-qt56.patch"
 	)
@@ -484,8 +491,8 @@ src_prepare() {
 
 	if ! use libcxx ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-128-libstdc++.patch"
-			"${FILESDIR}/font-gc-r1.patch"
+			"${FILESDIR}/chromium-130-libstdc++.patch"
+			"${FILESDIR}/font-gc-r2.patch"
 		)
 	fi
 
@@ -507,11 +514,11 @@ src_prepare() {
 			pushd "${CHROMIUM_COMMITS[$i]}" > /dev/null || die
 			if [[ $i = -*  ]]; then
 				einfo "Reverting ${patch_prefix}-${i/-}.patch"
-				git_wrapper apply -R --exclude="*unittest.cc" \
+				git_wrapper apply -R --exclude="*unittest.cc" --exclude="DEPS" \
 					-p1 < "${DISTDIR}/${patch_prefix}-${i/-}.patch"
 			else
 				einfo "Applying ${patch_prefix}-${i/-}.patch"
-				git_wrapper apply --exclude="*unittest.cc" \
+				git_wrapper apply --exclude="*unittest.cc" --exclude="DEPS" \
 					-p1 < "${DISTDIR}/${patch_prefix}-${i/-}.patch"
 			fi
 			popd > /dev/null || die
@@ -578,9 +585,7 @@ src_prepare() {
 		for i in "${PATCHES[@]}"; do
 			eapply_wrapper "$i"
 		done
-		if ! nonfatal eapply_user ; then
-			SRC_PREPARE_PATCHES_FAILED+=1
-		fi
+		nonfatal eapply_user
 	else
 		default
 	fi
@@ -693,10 +698,6 @@ src_prepare() {
 		popd >/dev/null
 	fi
 
-	if [[ "$SRC_PREPARE_PATCHES_FAILED" -ge 1 ]]; then
-		die "At least $SRC_PREPARE_PATCHES_FAILED patch(-es) failed"
-	fi
-
 	# From here we adapt ungoogled-chromium's patches to our needs
 	local ugc_pruning_list="${UGC_WD}/pruning.list"
 	local ugc_patch_series="${UGC_WD}/patches/series"
@@ -786,7 +787,6 @@ src_prepare() {
 		buildtools/third_party/libc++
 		buildtools/third_party/libc++abi
 		chrome/third_party/mozilla_security_manager
-		courgette/third_party
 	)
 	use cromite && keeplibs+=(
 		cromite_flags/third_party
@@ -880,6 +880,7 @@ src_prepare() {
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/package/lib/esm/third_party/rxjs
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/third_party/mitt
 		third_party/devtools-frontend/src/front_end/third_party/puppeteer/third_party/rxjs
+		third_party/devtools-frontend/src/front_end/third_party/third-party-web
 		third_party/devtools-frontend/src/front_end/third_party/vscode.web-custom-data
 		third_party/devtools-frontend/src/front_end/third_party/wasmparser
 		third_party/devtools-frontend/src/front_end/third_party/web-vitals
@@ -889,6 +890,7 @@ src_prepare() {
 		third_party/eigen3
 		third_party/emoji-segmenter
 		third_party/farmhash
+		third_party/fast_float
 		third_party/fdlibm
 		third_party/fft2d
 		third_party/flatbuffers
@@ -929,7 +931,6 @@ src_prepare() {
 		third_party/libsecret
 		third_party/libsrtp
 		third_party/libsync
-		third_party/libudev
 		third_party/liburlpattern
 	)
 	use system-libusb || keeplibs+=(
@@ -995,6 +996,7 @@ src_prepare() {
 		third_party/pyjson5
 		third_party/pyyaml
 		third_party/qcms
+		third_party/rapidhash
 		third_party/rnnoise
 		third_party/ruy
 		third_party/s2cellid
@@ -1030,8 +1032,8 @@ src_prepare() {
 		third_party/tflite/src/third_party/eigen3
 		third_party/tflite/src/third_party/fft2d
 		third_party/tflite/src/third_party/xla/third_party/tsl
-		third_party/tflite/src/third_party/xla/xla/tsl/framework
 		third_party/tflite/src/third_party/xla/xla/tsl/util
+		third_party/tflite/src/third_party/xla/xla/tsl/framework
 		third_party/ukey2
 		third_party/utf
 		third_party/vulkan
@@ -1374,6 +1376,8 @@ src_configure() {
 		myconf_gn+=" link_pulseaudio=true"
 	fi
 
+	# Non-developer builds of Chromium (for example, non-Chrome browsers, or
+	# Chromium builds provided by Linux distros) should disable the testing config
 	myconf_gn+=" disable_fieldtrial_testing_config=true"
 
 	myconf_gn+=" use_gold=false"
@@ -1452,7 +1456,7 @@ src_configure() {
 
 	local myarch="$(tc-arch)"
 
-	# Avoid CFLAGS problems, bug #352457, bug #390147.
+	# Avoid CFLAGS problems
 	if ! use custom-cflags; then
 		filter-flags "-O*" "-Wl,-O*" #See #25
 		strip-flags
@@ -1866,9 +1870,7 @@ pkg_postinst() {
 
 eapply_wrapper () {
 	if [ ! -z "${NODIE}" ]; then
-		if ! nonfatal eapply "$@" ; then
-			SRC_PREPARE_PATCHES_FAILED=$((SRC_PREPARE_PATCHES_FAILED++))
-		fi
+		nonfatal eapply "$@"
 	else
 		eapply "$@"
 	fi
@@ -1876,10 +1878,9 @@ eapply_wrapper () {
 
 git_wrapper () {
 	if [ ! -z "${NODIE}" ]; then
-		if git "$@" ; then
-			SRC_PREPARE_PATCHES_FAILED=$((SRC_PREPARE_PATCHES_FAILED++))
-		fi
+		git "$@"
 	else
 		git "$@" || die
 	fi
 }
+

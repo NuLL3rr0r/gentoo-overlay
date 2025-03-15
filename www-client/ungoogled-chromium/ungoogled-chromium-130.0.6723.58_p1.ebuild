@@ -1,4 +1,4 @@
-# Copyright 1999-2025 Gentoo Authors
+# Copyright 2009-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -284,7 +284,7 @@ BDEPEND="
 		qt6? ( dev-qt/qtbase:6 )
 	)
 	>=dev-build/gn-0.2114
-	dev-build/ninja
+	app-alternatives/ninja
 	dev-lang/perl
 	>=dev-util/gperf-3.0.3
 	dev-vcs/git
@@ -293,10 +293,10 @@ BDEPEND="
 	sys-devel/flex
 	virtual/pkgconfig
 	clang? (
-		pgo? ( >sys-devel/clang-19.0.0_pre20240518 >sys-devel/lld-19.0.0_pre20240518	)
-		!pgo? ( sys-devel/clang sys-devel/lld )
+		pgo? ( >llvm-core/clang-19.0.0_pre20240518 >llvm-core/lld-19.0.0_pre20240518	)
+		!pgo? ( llvm-core/clang llvm-core/lld )
 	)
-	cfi? ( sys-devel/clang-runtime[sanitize] )
+	cfi? ( llvm-core/clang-runtime[sanitize] )
 "
 
 if ! has chromium_pkg_die ${EBUILD_DEATH_HOOKS}; then
