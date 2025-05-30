@@ -23,7 +23,7 @@ inherit python-any-r1 qmake-utils readme.gentoo-r1 toolchain-funcs xdg-utils
 
 DESCRIPTION="Modifications to Chromium for removing Google integration and enhancing privacy"
 HOMEPAGE="https://github.com/ungoogled-software/ungoogled-chromium"
-PPC64_HASH="2c25ddd2bbabaef094918fe15eb5de524d16949c"
+PPC64_HASH="a85b64f07b489b8c6fdb13ecf79c16c56c560fc6"
 LITE_TARBALL=1
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${PV/_*}${LITE_TARBALL:+-lite}.tar.xz
 	ppc64? (
@@ -35,7 +35,7 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/chro
 
 LICENSE="BSD cromite? ( GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 IUSE_SYSTEM_LIBS="abseil-cpp av1 brotli crc32c double-conversion ffmpeg +harfbuzz +icu jsoncpp +libusb libvpx +openh264 openjpeg +png re2 snappy woff2 +zstd"
 IUSE="+X bluetooth cfi +clang convert-dict cups cpu_flags_arm_neon custom-cflags debug enable-driver gtk4 hangouts headless kerberos libcxx nvidia +official optimize-thinlto optimize-webui override-data-dir pax-kernel pgo +proprietary-codecs pulseaudio qt5 qt6 screencast selinux thinlto cromite vaapi wayland widevine cpu_flags_ppc_vsx3"
 RESTRICT="
@@ -55,20 +55,20 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="87bb243619c37600f637bc129f5516944a4263d2"
+UGC_COMMIT_ID="76f98dc4eb94681cd0d585854928127233354b08"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="555f445aa033f78991d2df3544fd44b1de0f4340"
+CROMITE_COMMIT_ID="b4f8d96284c854cbe6448d2e30ee5a30ce3f0b82"
 
 CHROMIUM_COMMITS=(
-	-da443d7bd3777a5dd0587ecff1fbad1722b106b5
-	-7c6c78ad4e0ed6a0e1204264b02db8f85d34994e
-	-49b23faa16ad14e96601aea8772c7279fcbd6b44
-	-6db9674ad4375d40db7df622652287ccdae82f24
-	-be0c460cbca7b0c927e44a529b8489c6d50ea463
+	b85c9c11c561d4b45a7d3083a4e63e65f9ffeff3 #138+
+	4a007f6c1a2f601a88262255c802e5b20edfd2a7 #138+
+	4c736420952f355f18bdc4f4ea2d16e4514fa034 #138+
+	2a82a46692e9ec825138a8cdecc758e29449f67d #138+
+	48b64da89b3ecb7ccb576a334b19b3066dd2b793 #138+
 )
 
 UGC_PV="${PV/_p/-}"
@@ -146,6 +146,7 @@ COMMON_X_DEPEND="
 "
 
 COMMON_SNAPSHOT_DEPEND="
+	system-icu? ( >=dev-libs/icu-73.0:= )
 	system-abseil-cpp? ( >=dev-cpp/abseil-cpp-20230125.2 )
 	system-brotli? ( >=app-arch/brotli-9999 )
 	system-crc32c? ( dev-libs/crc32c )
@@ -157,7 +158,6 @@ COMMON_SNAPSHOT_DEPEND="
 	system-re2? ( >=dev-libs/re2-0.2019.08.01:= )
 	system-libvpx? ( >=media-libs/libvpx-1.13.0:=[postproc] )
 	system-libusb? ( virtual/libusb:1 )
-	system-icu? ( >=dev-libs/icu-71.1:= )
 	cromite? ( dev-util/patchutils )
 	>=dev-libs/libxml2-2.12.4:=[icu]
 	dev-libs/nspr:=
@@ -283,10 +283,10 @@ BDEPEND="
 		qt5? ( dev-qt/qtcore:5 )
 		qt6? ( dev-qt/qtbase:6 )
 	)
-	>=dev-build/gn-0.2114
+	>=dev-build/gn-0.2217
 	app-alternatives/ninja
 	dev-lang/perl
-	>=dev-util/gperf-3.0.3
+	>=dev-util/gperf-3.2
 	dev-vcs/git
 	>=net-libs/nodejs-7.6.0[inspector]
 	>=sys-devel/bison-2.4.3
@@ -450,7 +450,7 @@ src_prepare() {
 	# Calling this here supports resumption via FEATURES=keepwork
 	python_setup
 
-	cp -f "${FILESDIR}/compiler-132.patch" "${T}/compiler.patch"
+	cp -f "${FILESDIR}/compiler-137.patch" "${T}/compiler.patch"
 	if ! use custom-cflags; then #See #25 #92
 		sed -i '/default_stack_frames/Q' "${T}/compiler.patch" || die
 	fi
@@ -464,7 +464,9 @@ src_prepare() {
 		"${FILESDIR}/chromium-131-unbundle-icu-target.patch"
 		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
 		"${FILESDIR}/chromium-135-map_droppable-glibc.patch"
-		"${FILESDIR}/chromium-135-webrtc-pipewire.patch"
+		"${FILESDIR}/chromium-136-drop-nodejs-ver-check.patch"
+		"${FILESDIR}/chromium-137-openh264-include-path.patch"
+		"${FILESDIR}/chromium-137-pdfium-system-libpng.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-123-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"
@@ -475,9 +477,9 @@ src_prepare() {
 		"${FILESDIR}/restore-x86-r2.patch"
 		"${FILESDIR}/chromium-132-optional-lens.patch"
 		"${FILESDIR}/chromium-133-webrtc-fixes.patch"
-		"${FILESDIR}/chromium-135-no-rust.patch"
-		"${FILESDIR}/chromium-135-fontations.patch"
 		"${FILESDIR}/chromium-135-crabby.patch"
+		"${FILESDIR}/chromium-136-fontations.patch"
+		"${FILESDIR}/chromium-137-no-rust.patch"
 	)
 
 	shopt -s globstar nullglob
@@ -523,10 +525,17 @@ src_prepare() {
 	ewarn "Using media-libs/libavif instead of CrabbyAvif"
 	ewarn
 
+	if ! use clang ; then
+		PATCHES+=(
+			"${FILESDIR}/chromium-137-gcc.patch"
+		)
+	fi
+
 	if ! use libcxx ; then
 		PATCHES+=(
-			"${FILESDIR}/chromium-135-libstdc++.patch"
+			"${FILESDIR}/chromium-137-libstdc++.patch"
 			"${FILESDIR}/chromium-134-stdatomic.patch"
+			"${FILESDIR}/chromium-137-constexpr.patch"
 			"${FILESDIR}/font-gc-asan.patch"
 		)
 	fi
@@ -567,7 +576,7 @@ src_prepare() {
 
 	if ! use bluetooth ; then
 		PATCHES+=(
-			"${FILESDIR}/disable-bluez-r3.patch"
+			"${FILESDIR}/disable-bluez-r4.patch"
 		)
 	fi
 
@@ -671,7 +680,22 @@ src_prepare() {
 
 	fi
 
-	mkdir -p third_party/node/linux/node-linux-x64/bin || die
+	if [[ ${LLVM_SLOT} == "19" ]]; then
+		# Upstream now hard depend on a feature that was added in LLVM 20.1, but we don't want to stabilise that yet.
+		# Do the temp file shuffle in case someone is using something other than `gawk`
+		{
+			awk '/config\("clang_warning_suppression"\) \{/	{ print $0 " }"; sub(/clang/, "xclang"); print; next }
+				{ print }' build/config/compiler/BUILD.gn > "${T}/build.gn" && \
+				mv "${T}/build.gn" build/config/compiler/BUILD.gn
+		} || die "Unable to disable warning suppression"
+	fi
+
+	# Not included in -lite tarballs, but we should check for it anyway.
+	if [[ -f third_party/node/linux/node-linux-x64/bin/node ]]; then
+		rm third_party/node/linux/node-linux-x64/bin/node || die
+	else
+		mkdir -p third_party/node/linux/node-linux-x64/bin || die
+	fi
 	ln -s "${EPREFIX}"/usr/bin/node third_party/node/linux/node-linux-x64/bin/node || die
 
 	# adjust python interpreter version
@@ -858,6 +882,11 @@ src_prepare() {
 		third_party/ced
 		third_party/cld_3
 		third_party/closure_compiler
+	)
+	use libcxx && keeplibs+=(
+		third_party/compiler-rt
+	)
+	keeplibs+=(
 		third_party/content_analysis_sdk
 		third_party/cpuinfo
 		third_party/crabbyavif
@@ -887,6 +916,7 @@ src_prepare() {
 		third_party/devtools-frontend/src/front_end/third_party/i18n
 		third_party/devtools-frontend/src/front_end/third_party/intl-messageformat
 		third_party/devtools-frontend/src/front_end/third_party/json5
+		third_party/devtools-frontend/src/front_end/third_party/legacy-javascript
 		third_party/devtools-frontend/src/front_end/third_party/lighthouse
 		third_party/devtools-frontend/src/front_end/third_party/lit
 		third_party/devtools-frontend/src/front_end/third_party/marked
@@ -1201,10 +1231,9 @@ src_prepare() {
 		keeplibs+=( third_party/ungoogled )
 	fi
 
-	ebegin "Removing bundled libraries"
 	# Remove most bundled libraries. Some are still needed.
-	build/linux/unbundle/remove_bundled_libraries.py "${keeplibs[@]}" --do-remove
-	eend $? || die
+	einfo "Unbundling third-party libraries ..."
+	build/linux/unbundle/remove_bundled_libraries.py "${keeplibs[@]}" --do-remove || die
 
 	# bundled eu-strip is for amd64 only and we don't want to pre-stripped binaries
 	mkdir -p buildtools/third_party/eu-strip/bin || die
@@ -1399,7 +1428,8 @@ src_configure() {
 		snappy
 	)
 
-	build/linux/unbundle/replace_gn_files.py --system-libraries "${gn_system_libraries[@]}" || die
+	build/linux/unbundle/replace_gn_files.py --system-libraries "${gn_system_libraries[@]}" ||
+		die "Failed to replace GN files for system libraries"
 
 	# TODO 131: The above call clobbers `enable_freetype = true` in the freetype gni file
 	# drop the last line, then append the freetype line and a new curly brace to end the block
@@ -1451,6 +1481,7 @@ src_configure() {
 		myconf_gn+=" use_custom_libcxx=true"
 	else
 		myconf_gn+=" use_custom_libcxx=false"
+		myconf_gn+=" use_llvm_libatomic=false"
 		append-cppflags -U_GLIBCXX_ASSERTIONS #See #318
 	fi
 
@@ -1503,6 +1534,8 @@ src_configure() {
 	myconf_gn+=" enable_chromium_prelude=false"
 	myconf_gn+=" enable_updater=false"
 	myconf_gn+=" enable_update_notifications=false"
+	myconf_gn+=" enable_video_effects=false"
+	myconf_gn+=" enable_constraints=false"
 
 	# Disable pseudolocales, only used for testing
 	myconf_gn+=" enable_pseudolocales=false"
@@ -1737,8 +1770,6 @@ src_compile() {
 	# Don't inherit PYTHONPATH from environment, bug #789021, #812689
 	local -x PYTHONPATH=
 
-	use convert-dict && eninja -C out/Release convert_dict
-
 	# Build mksnapshot and pax-mark it.
 	if use pax-kernel; then
 		local x
@@ -1756,6 +1787,8 @@ src_compile() {
 	# Even though ninja autodetects number of CPUs, we respect
 	# user's options, for debugging with -j 1 or any other reason.
 	eninja -C out/Release chrome
+
+	use convert-dict && eninja -C out/Release convert_dict
 
 	use enable-driver && eninja -C out/Release chromedriver
 	#use suid && eninja -C out/Release chrome_sandbox

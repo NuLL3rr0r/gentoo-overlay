@@ -59,6 +59,7 @@ CDEPEND="
 	media-libs/flac
 	>=media-libs/libwebp-0.4.0
 	sys-libs/zlib[minizip]
+	>=media-libs/libavif-1.2.0
 	app-accessibility/at-spi2-core
 	x11-libs/gtk+:3[X]
 	media-libs/lcms
@@ -100,6 +101,10 @@ pkg_pretend() {
 		ewarn "If you think this is a mistake let me know in #193"
 		ewarn
 	fi
+	ewarn
+	ewarn "Fontations Rust font stack is disabled"
+	ewarn "Using media-libs/libavif instead of CrabbyAvif"
+	ewarn
 }
 
 src_install() {

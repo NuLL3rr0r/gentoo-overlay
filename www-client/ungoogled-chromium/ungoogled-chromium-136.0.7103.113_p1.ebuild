@@ -55,13 +55,13 @@ REQUIRED_USE="
 	vaapi? ( !system-av1 !system-libvpx )
 "
 
-#UGC_COMMIT_ID="ff88e8bafb3c25b04cc3043ba136b44eb614d56f"
+# UGC_COMMIT_ID="ecacfbbb500a86d206597e20bc17e53a11c9bac5"
 # UGC_PR_COMMITS=(
 # 	c917e096342e5b90eeea91ab1f8516447c8756cf
 # 	5794e9d12bf82620d5f24505798fecb45ca5a22d
 # )
 
-CROMITE_COMMIT_ID="f2122e2d4afe0744eec097411b5100966ac99bb2"
+CROMITE_COMMIT_ID="5a6f6870a4185cb7e2411183031581c7963d6cf5"
 
 CHROMIUM_COMMITS=(
 	-da443d7bd3777a5dd0587ecff1fbad1722b106b5
@@ -469,6 +469,7 @@ src_prepare() {
 		"${FILESDIR}/chromium-135-oauth2-client-switches.patch"
 		"${FILESDIR}/chromium-135-map_droppable-glibc.patch"
 		"${FILESDIR}/chromium-136-drop-nodejs-ver-check.patch"
+		"${FILESDIR}/chromium-135-gperf.patch"
 		"${FILESDIR}/chromium-125-cloud_authenticator.patch"
 		"${FILESDIR}/chromium-123-qrcode.patch"
 		"${FILESDIR}/perfetto-system-zlib.patch"

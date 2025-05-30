@@ -1,14 +1,10 @@
-From 00683131977068f7ab8b44e919d03a453fb8fb8c Mon Sep 17 00:00:00 2001
-From: Matt Jolly <Matt.Jolly@footclan.ninja>
-Date: Wed, 7 Aug 2024 20:12:06 +1000
 Subject: [PATCH] This patch configures the Chromium build to work
-
-... with Gentoo.
+with Gentoo.
 
 This includes things like disabling rust nightly features.
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
-@@ -305,9 +305,6 @@ config("compiler") {
+@@ -308,12 +308,8 @@ config("compiler") {
  
    configs += [
      # See the definitions below.
@@ -17,8 +13,11 @@ This includes things like disabling rust nightly features.
 -    ":compiler_cpu_abi",
      ":compiler_codegen",
      ":compiler_deterministic",
+-    ":clang_warning_suppression",
    ]
-@@ -568,62 +568,6 @@
+ 
+   # Here we enable -fno-delete-null-pointer-checks, which makes various nullptr
+@@ -569,68 +565,6 @@ config("compiler") {
      ldflags += [ "-Wl,-z,keep-text-section-prefix" ]
    }
  
@@ -72,16 +71,22 @@ This includes things like disabling rust nightly features.
 -
 -    # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
 -    # (excluding toolchains that use an older version of LLVM).
--    # TODO(crbug.com/376278218): This causes segfault on Linux ARM builds.
--    if (is_linux && !llvm_android_mainline && current_cpu != "arm" &&
+-    if (is_linux && use_lld && !llvm_android_mainline &&
 -        default_toolchain != "//build/toolchain/cros:target") {
 -      cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
+-    }
+-
+-    # TODO(crbug.com/413427035): Remove once
+-    # https://github.com/llvm/llvm-project/pull/136867/ is landed.
+-    if (!is_win && !llvm_android_mainline &&
+-        default_toolchain != "//build/toolchain/cros:target") {
+-      cflags += [ "-fextend-variable-liveness=none" ]
 -    }
 -  }
  
    # C11/C++11 compiler flags setup.
    # ---------------------------
-@@ -712,7 +660,7 @@ config("compiler") {
+@@ -743,7 +677,7 @@ config("compiler") {
  
      cflags += [
        "-flto=thin",
@@ -90,7 +95,7 @@ This includes things like disabling rust nightly features.
      ]
  
      if (thin_lto_enable_cache) {
-@@ -813,14 +761,12 @@ config("compiler") {
+@@ -842,14 +776,12 @@ config("compiler") {
      # TODO(crbug.com/40182783): investigate why this isn't effective on
      # arm32.
      if (!is_android || current_cpu == "arm64") {
@@ -105,7 +110,7 @@ This includes things like disabling rust nightly features.
            "-Clinker-plugin-lto=yes",
          ]
        } else {
-@@ -828,9 +774,6 @@ config("compiler") {
+@@ -857,9 +789,6 @@ config("compiler") {
          rustflags += [ "-Cembed-bitcode=no" ]
        }
  
@@ -115,7 +120,7 @@ This includes things like disabling rust nightly features.
      }
  
      # This flag causes LTO to create an .ARM.attributes section with the correct
-@@ -1540,51 +1492,6 @@
+@@ -1569,51 +1498,6 @@ config("compiler_deterministic") {
      }
    }
  
@@ -167,29 +172,106 @@ This includes things like disabling rust nightly features.
  
    # Tells the compiler not to use absolute paths when passing the default
    # paths to the tools it invokes. We don't want this because we don't
-@@ -1604,39 +1511,6 @@
+@@ -1633,116 +1517,6 @@ config("compiler_deterministic") {
    }
  }
  
 -config("clang_revision") {
 -  if (is_clang && clang_base_path == default_clang_base_path &&
 -      current_os != "zos") {
--    update_args = [
--      "--print-revision",
--      "--verify-version=$clang_version",
--    ]
+-    _perform_consistency_checks = current_toolchain == default_toolchain
 -    if (llvm_force_head_revision) {
--      update_args += [ "--llvm-force-head-revision" ]
+-      _head_revision_stamp_path = "//third_party/llvm-build/force_head_revision"
+-      _head_revision = ""
+-      if (path_exists(_head_revision_stamp_path)) {
+-        _head_revision = read_file(_head_revision_stamp_path, "trim string")
+-      }
+-      assert(
+-          _head_revision != "",
+-          "llvm_force_head_revision=true, but no locally built version was detected.")
+-      _clang_revision = _head_revision
+-    } else {
+-      _clang_revision = read_file(
+-              "//third_party/llvm-build/Release+Asserts/cr_build_revision",
+-              "trim string")
+-
+-      # Ensure that the synced clang version matches what's in git.
+-      if (_perform_consistency_checks) {
+-        # Parse the clang version from the Python script.
+-        _clang_version_lines = filter_include(
+-                read_file("//tools/clang/scripts/update.py", "list lines"),
+-                [ "CLANG_*REVISION = *" ])
+-        _py_revision =
+-            string_replace(_clang_version_lines[0], "CLANG_REVISION = '", "")
+-        _py_revision = string_replace(_py_revision, "'", "")
+-        _py_subrevision =
+-            string_replace(_clang_version_lines[1], "CLANG_SUB_REVISION = ", "")
+-        _expected_clang_revision = "$_py_revision-$_py_subrevision"
+-
+-        assert(
+-            _clang_revision == _expected_clang_revision,
+-            "clang_revision=\"$_clang_revision\" but update.py expected \"$_expected_clang_revision\". Did you forget to gclient sync?")
+-      }
 -    }
--    clang_revision = exec_script("//tools/clang/scripts/update.py",
--                                 update_args,
--                                 "trim string")
+-
+-    if (_perform_consistency_checks) {
+-      # Ensure that the revision matches the version major expected by GN.
+-      _versions_match = filter_include([ _clang_revision ],
+-                                       [ "llvmorg-$clang_version-*" ]) != []
+-      assert(
+-          _versions_match,
+-          "clang_revision=\"$_clang_revision\" but clang_version=\"$clang_version\". clang_version in build/toolchain/toolchain.gni is likely outdated.")
+-    }
+-
+-    if (toolchain_has_rust && _perform_consistency_checks) {
+-      # Ensure that the synced rust version matches what's in git.
+-      _rust_revision_lines =
+-          filter_include(read_file("//tools/rust/update_rust.py", "list lines"),
+-                         [ "RUST_*REVISION = *" ])
+-      _py_revision =
+-          string_replace(_rust_revision_lines[0], "RUST_REVISION = '", "")
+-      _py_revision = string_replace(_py_revision, "'", "")
+-      _py_subrevision =
+-          string_replace(_rust_revision_lines[1], "RUST_SUB_REVISION = ", "")
+-      _expected_rust_revision = "$_py_revision-$_py_subrevision"
+-
+-      # Ensure the rust version matches the clang version.
+-      assert(
+-          filter_include([ rustc_revision ],
+-                         [ "*-$_expected_rust_revision-*" ]) != [],
+-          "rustc_revision=\"$rustc_revision\" but update_rust.py expected \"$_expected_rust_revision\". Run \"gclient sync\"?")
+-    }
 -
 -    # This is here so that all files get recompiled after a clang roll and
 -    # when turning clang on or off. (defines are passed via the command line,
 -    # and build system rebuild things when their commandline changes). Nothing
 -    # should ever read this define.
--    defines = [ "CR_CLANG_REVISION=\"$clang_revision\"" ]
+-    defines = [ "CR_CLANG_REVISION=\"$_clang_revision\"" ]
+-  }
+-}
+-
+-# Controls the usage of a warning suppression mapping (WSM) file to suppress
+-# warnings based on the path of the file they come from. It's controlled by the
+-# `clang_warning_suppression_file` gn argument , which points to a text file
+-# defining which warnings should be suppressed where.
+-# See //build/config/warning_suppression.txt for an example file; this is the
+-# file used by Chromium.
+-#
+-# To use a different file, or to use this functionality outside of chromium,
+-# set the `clang_warning_suppression_file` argument to point to the new file,
+-# e.g. by setting in the the project's .gn file.
+-config("clang_warning_suppression") {
+-  # Some build configs use older versions of clang that don't support WSMs
+-  if (!is_nacl && default_toolchain != "//build/toolchain/cros:target" &&
+-      !llvm_android_mainline && is_clang &&
+-      clang_warning_suppression_file != "") {
+-    from_build_root =
+-        rebase_path(clang_warning_suppression_file, root_build_dir)
+-    inputs = [ clang_warning_suppression_file ]
+-    cflags = [
+-      "-Xclang",
+-      "--warning-suppression-mappings=" + from_build_root,
+-    ]
 -  }
 -}
 -
@@ -207,7 +289,7 @@ This includes things like disabling rust nightly features.
  
  config("compiler_arm_fpu") {
    if (current_cpu == "arm" && !is_ios && !is_nacl) {
-@@ -2006,11 +1865,7 @@ config("chromium_code") {
+@@ -2179,11 +1953,7 @@ config("chromium_code") {
        defines = [ "_HAS_NODISCARD" ]
      }
    } else {
@@ -220,7 +302,7 @@ This includes things like disabling rust nightly features.
  
      # In Chromium code, we define __STDC_foo_MACROS in order to get the
      # C99 macros on Mac and Linux.
-@@ -2019,24 +1874,6 @@ config("chromium_code") {
+@@ -2192,24 +1962,6 @@ config("chromium_code") {
        "__STDC_FORMAT_MACROS",
      ]
  
@@ -245,7 +327,7 @@ This includes things like disabling rust nightly features.
      if (is_apple) {
        cflags_objc = [ "-Wimplicit-retain-self" ]
        cflags_objcc = [ "-Wimplicit-retain-self" ]
-@@ -2429,7 +2266,8 @@ config("default_stack_frames") {
+@@ -2625,7 +2377,8 @@ config("default_stack_frames") {
  # [0]: https://pinpoint-dot-chromeperf.appspot.com/job/147634a8be0000
  # [1]: https://pinpoint-dot-chromeperf.appspot.com/job/132bc772be0000
  # [2]: https://crrev.com/c/5447532
@@ -253,9 +335,9 @@ This includes things like disabling rust nightly features.
 +config("optimize") { }
 +config("xoptimize") {
    if (is_win) {
-     cflags = [ "/O2" ] + common_optimize_on_cflags
- 
-@@ -2470,7 +2308,8 @@ config("optimize") {
+     # clang-cl's /O2 corresponds to clang's -O3, and really want -O2 for
+     # consistency with the other platforms.
+@@ -2674,7 +2427,8 @@ config("optimize") {
  }
  
  # Turn off optimizations.
@@ -265,7 +347,7 @@ This includes things like disabling rust nightly features.
    if (is_win) {
      cflags = [
        "/Od",  # Disable optimization.
-@@ -2510,7 +2349,8 @@ config("no_optimize") {
+@@ -2709,7 +2463,8 @@ config("no_optimize") {
  # Turns up the optimization level. Used to explicitly enable -O2 instead of
  # -Os for select targets on platforms that use optimize_for_size. No-op
  # elsewhere.
@@ -275,7 +357,7 @@ This includes things like disabling rust nightly features.
    if (is_nacl && is_nacl_irt) {
      # The NaCl IRT is a special case and always wants its own config.
      # Various components do:
-@@ -2543,7 +2383,8 @@ config("optimize_max") {
+@@ -2742,7 +2497,8 @@ config("optimize_max") {
  #
  # TODO(crbug.com/41259697) - rework how all of these configs are related
  # so that we don't need this disclaimer.
@@ -285,7 +367,7 @@ This includes things like disabling rust nightly features.
    if (is_nacl && is_nacl_irt) {
      # The NaCl IRT is a special case and always wants its own config.
      # Various components do:
-@@ -2572,7 +2413,8 @@ config("optimize_speed") {
+@@ -2771,7 +2527,8 @@ config("optimize_speed") {
    }
  }
  
@@ -295,7 +377,7 @@ This includes things like disabling rust nightly features.
    cflags = [ "-O1" ] + common_optimize_on_cflags
    rustflags = [ "-Copt-level=1" ]
    ldflags = common_optimize_on_ldflags
-@@ -2705,7 +2547,8 @@ config("win_pdbaltpath") {
+@@ -2902,7 +2659,8 @@ config("win_pdbaltpath") {
  }
  
  # Full symbols.
@@ -303,9 +385,9 @@ This includes things like disabling rust nightly features.
 +config("symbols") { }
 +config("xsymbols") {
    rustflags = []
+   configs = []
    if (is_win) {
-     if (is_clang) {
-@@ -2855,7 +2698,8 @@ config("symbols") {
+@@ -3064,7 +2822,8 @@ config("symbols") {
  # Minimal symbols.
  # This config guarantees to hold symbol for stack trace which are shown to user
  # when crash happens in unittests running on buildbot.
@@ -315,7 +397,7 @@ This includes things like disabling rust nightly features.
    rustflags = []
    if (is_win) {
      # Functions, files, and line tables only.
-@@ -2940,7 +2784,8 @@ config("minimal_symbols") {
+@@ -3149,7 +2908,8 @@ config("minimal_symbols") {
  # This configuration contains function names only. That is, the compiler is
  # told to not generate debug information and the linker then just puts function
  # names in the final debug information.
@@ -325,6 +407,3 @@ This includes things like disabling rust nightly features.
    if (is_win) {
      ldflags = [ "/DEBUG" ]
  
--- 
-2.45.2
-
