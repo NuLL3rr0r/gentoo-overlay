@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+    <maintainer type="person">
+        <email>info@babaei.net</email>
+        <name>Mamadou Babaei</name>
+    </maintainer>
+    <longdescription lang="en">
+    A desktop application for charting platform and social network used by
+    60M+ traders and investors worldwide to spot opportunities across
+    global markets.
+    </longdescription>
+</pkgmetadata>
