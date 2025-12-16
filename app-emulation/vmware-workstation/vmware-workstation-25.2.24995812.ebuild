@@ -1,31 +1,29 @@
 # Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=(python3_{13..14})
 inherit readme.gentoo-r1 pam python-any-r1 systemd xdg-utils
 
 MY_PN="VMware-Workstation"
-MY_PV=$(ver_cut 1-3)
-PV_MODULES="${MY_PV}"
-PV_BUILD=$(ver_cut 4)
+MY_PV=$(ver_cut 1-2)
+PV_MODULES="25.2"
+PV_BUILD=$(ver_cut 3)
 MY_P="${MY_PN}-${MY_PV}-${PV_BUILD}"
-VMWARE_FUSION_VER="13.5.1/23298085" # https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/
 SYSTEMD_UNITS_TAG="gentoo-02"
 UNLOCKER_VERSION="3.0.5"
 
 DESCRIPTION="Emulate a complete PC without the performance overhead of most emulators"
 HOMEPAGE="http://www.vmware.com/products/workstation/"
 SRC_URI="
-	https://download3.vmware.com/software/WKST-${MY_PV//./}-LX/${MY_P}.x86_64.bundle
+	${MY_PN}-Full-${MY_PV/./H}-${PV_BUILD}.x86_64.bundle
 	macos-guests? (
-		https://github.com/paolo-projects/unlocker/archive/${UNLOCKER_VERSION}.tar.gz -> unlocker-${UNLOCKER_VERSION}.tar.gz
-		vmware-tools-darwinPre15? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/universal/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${PV}.zip.tar )
-		vmware-tools-darwin? ( https://softwareupdate.vmware.com/cds/vmw-desktop/fusion/${VMWARE_FUSION_VER}/universal/core/com.vmware.fusion.zip.tar -> com.vmware.fusion-${PV}.zip.tar )
+		fetch+https://github.com/paolo-projects/unlocker/archive/${UNLOCKER_VERSION}.tar.gz -> unlocker-${UNLOCKER_VERSION}.tar.gz
 	)
-	systemd? ( https://github.com/akhuettel/systemd-vmware/archive/${SYSTEMD_UNITS_TAG}.tar.gz -> vmware-systemd-${SYSTEMD_UNITS_TAG}.tgz )
+	systemd? ( fetch+https://github.com/akhuettel/systemd-vmware/archive/${SYSTEMD_UNITS_TAG}.tar.gz -> vmware-systemd-${SYSTEMD_UNITS_TAG}.tgz )
 	"
+S=${WORKDIR}/extracted
 
 LICENSE="GPL-2 GPL-3 MIT-with-advertising vmware"
 SLOT="0"
@@ -33,16 +31,8 @@ KEYWORDS="~amd64"
 # the kernel modules are optional because they're not needed to connect to VMs
 # running on remote systems - https://bugs.gentoo.org/604426
 IUSE="doc macos-guests +modules ovftool systemd vix"
-DARWIN_GUESTS="darwin darwinPre15"
-IUSE_VMWARE_GUESTS="${DARWIN_GUESTS} linux linuxPreGlibc25 netware solaris windows winPre2k winPreVista"
-for guest in ${IUSE_VMWARE_GUESTS}; do
-	IUSE+=" vmware-tools-${guest}"
-done
-REQUIRED_USE="
-	vmware-tools-darwin? ( macos-guests )
-	vmware-tools-darwinPre15? ( macos-guests )
-"
-RESTRICT="mirror preserve-libs strip"
+
+RESTRICT="mirror preserve-libs strip fetch"
 
 RDEPEND="
 	app-arch/bzip2
@@ -53,6 +43,7 @@ RDEPEND="
 	dev-libs/gmp:0
 	dev-libs/icu
 	dev-libs/json-c
+	dev-libs/libxml2-compat
 	dev-libs/nettle:0
 	gnome-base/dconf
 	media-gfx/graphite2
@@ -66,6 +57,7 @@ RDEPEND="
 	sys-apps/util-linux
 	sys-auth/polkit
 	virtual/libcrypt:*
+	x11-libs/libXcursor
 	x11-libs/libXinerama
 	x11-libs/libXxf86vm
 	x11-libs/libdrm
@@ -83,13 +75,16 @@ BDEPEND="
 	app-admin/chrpath
 "
 
-S=${WORKDIR}/extracted
 VM_INSTALL_DIR="/opt/vmware"
 
 QA_PREBUILT="/opt/*"
 
 QA_WX_LOAD="opt/vmware/lib/vmware/tools-upgraders/vmware-tools-upgrader-32 opt/vmware/lib/vmware/bin/vmware-vmx-stats opt/vmware/lib/vmware/bin/vmware-vmx-debug opt/vmware/lib/vmware/bin/vmware-vmx"
 # adding "opt/vmware/lib/vmware/lib/libvmware-gksu.so/libvmware-gksu.so" to QA_WX_LOAD doesn't work
+
+pkg_nofetch() {
+	einfo "${MY_PN}-Full-${MY_PV/./H}-${PV_BUILD}.x86_64.bundle should be downloaded manually"
+}
 
 src_unpack() {
 	if has usersandbox ${FEATURES}; then
@@ -106,7 +101,7 @@ src_unpack() {
 	done
 
 	export LC_ALL=C # https://communities.vmware.com/thread/618570?start=15&tstart=0
-	local bundle="${MY_P}.x86_64.bundle"
+	local bundle="${MY_PN}-Full-${MY_PV/./H}-${PV_BUILD}.x86_64.bundle"
 	chmod 755 "${bundle}"
 	# this needs a /tmp mounted without "noexec" because it extracts and executes scripts in there
 	./${bundle} --console --required --eulas-agreed --extract=extracted || die "unable to extract bundle"
@@ -115,16 +110,8 @@ src_unpack() {
 		rm -r extracted/vmware-vix-core extracted/vmware-vix-lib-Workstation* || die "unable to remove dir"
 	fi
 
-	if use vmware-tools-darwinPre15 || use vmware-tools-darwin; then
-		unzip -q com.vmware.fusion.zip || die
-		for guest in ${DARWIN_GUESTS}; do
-			if use vmware-tools-${guest}; then
-				mkdir extracted/vmware-tools-${guest}
-				mv "payload/VMware Fusion.app/Contents/Library/isoimages/x86_x64/${guest}.iso" extracted/vmware-tools-${guest}/ || die
-			fi
-		done
-		rm -rf __MACOSX payload manifest.plist preflight postflight com.vmware.fusion.zip
-	fi
+	#fix bug with bundled libstdc++.so.6
+	rm -rv extracted/vmware-vmx/lib/lib/libstdc++.so.6
 }
 
 src_prepare() {
@@ -146,6 +133,7 @@ src_prepare() {
 Before you can use ${PN}, you must configure a default network setup.
 You can do this by running 'emerge --config ${PN}'.\n
 To be able to run ${PN} your user must be in the 'vmware' group."
+
 }
 
 src_install() {
@@ -177,7 +165,7 @@ src_install() {
 
 	# install the installer
 	insinto "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}
-	doins -r vmware-installer/{cdsHelper,vmis,vmis-launcher,vmware-cds-helper,vmware-installer,vmware-installer.py,python}
+	doins -r vmware-installer/{cdsHelper,vmis,vmis-launcher,vmware-cds-helper,vmware-installer,vmware-installer.py,python,sopython}
 	chrpath -k -r '/../lib:$ORIGIN/../lib' "${ED}${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/python/lib/lib-dynload/*.so >/dev/null || die
 	fperms 0755 "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/{vmis-launcher,cdsHelper,vmware-installer}
 	dosym "${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/vmware-installer "${VM_INSTALL_DIR}"/bin/vmware-installer
@@ -187,6 +175,10 @@ src_install() {
 		-e "s/@@VERSION@@/${vmware_installer_version}/" \
 		-e "s,@@VMWARE_INSTALLER@@,${VM_INSTALL_DIR}/lib/vmware-installer/${vmware_installer_version}," \
 		"${ED}/etc/vmware-installer/bootstrap" || die
+
+	# fix libxcb incompatibility
+	rm -rf "${ED}${VM_INSTALL_DIR}"/lib/vmware/lib/libxcb.so.1
+	rm -rf "${ED}${VM_INSTALL_DIR}"/lib/vmware-installer/${vmware_installer_version}/cdsHelper/lib/libxcb.so.1
 
 	# install the ancillaries
 	insinto /usr
@@ -374,8 +366,7 @@ src_install() {
 	fi
 
 	# VMware tools
-	for guest in ${IUSE_VMWARE_GUESTS}; do
-		if use vmware-tools-${guest}; then
+	for guest in windows windows-x86; do
 			local dbfile="${ED}/etc/vmware-installer/database"
 			if ! [ -e "${dbfile}" ]; then
 				> "${dbfile}"
@@ -388,11 +379,17 @@ src_install() {
 				local version="$(grep -oPm1 '(?<=<version>)[^<]+' ${manifest})"
 				sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES('vmware-tools-${guest}','${version}','${PV_BUILD}',1,'${guest}','${guest}',1);"
 			else
-				sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES('vmware-tools-${guest}','${VMWARE_FUSION_VER%/*}','${VMWARE_FUSION_VER#*/}',1,'${guest}','${guest}',1);"
+				if [[ "${guest}" =~ "darwin" ]]; then
+					sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES('vmware-tools-${guest}','${VMWARE_FUSION_VER%/*}','${VMWARE_FUSION_VER#*/}',1,'${guest}','${guest}',1);"
+				else
+					sqlite3 "${dbfile}" "INSERT INTO components(name,version,buildNumber,component_core_id,longName,description,type) VALUES('vmware-tools-${guest}','${VMWARE_TOOLS_VER%-*}','${VMWARE_TOOLS_VER#*-}',1,'${guest}','${guest}',1);"
+				fi
 			fi
+
 			insinto "${VM_INSTALL_DIR}/lib/vmware/isoimages"
-			doins vmware-tools-${guest}/${guest}.iso
-		fi
+			if [[ -e "vmware-tools-${guest}/${guest}.iso" ]]; then
+				doins "vmware-tools-${guest}/${guest}.iso"
+			fi
 	done
 
 	# metadata
@@ -411,9 +408,6 @@ pkg_postinst() {
 	xdg_mimeinfo_database_update
 	xdg_icon_cache_update
 	elog "${DOC_CONTENTS}"
-	elog "---"
-	elog "If inserting your license key in the GUI fails, you can do it from the command line, as root:"
-	elog "/opt/vmware/lib/vmware/bin/vmware-vmx-debug --new-sn  XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
 }
 
 pkg_postrm() {

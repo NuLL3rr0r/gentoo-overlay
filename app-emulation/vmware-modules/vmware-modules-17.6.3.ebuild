@@ -6,26 +6,18 @@ EAPI=8
 inherit flag-o-matic linux-mod-r1 udev
 
 DESCRIPTION="VMware kernel modules"
-HOMEPAGE="https://github.com/mkubecek/vmware-host-modules"
+HOMEPAGE="https://github.com/bytium/vm-host-modules"
 
 # Highest kernel version known to work:
-MY_KERNEL_VERSION="6.11"
+MY_KERNEL_VERSION="6.16"
 
-# Upstream does not want to tag versions or anything that looks like properly
-# releasing the software, so we need to just pick a commit from
-# https://github.com/mkubecek/vmware-host-modules/commits/workstation-${PV}
-# and test it ourselves.
-#
-# Details: https://github.com/mkubecek/vmware-host-modules/issues/158#issuecomment-1228341760
-MY_COMMIT="22ec046990969018cfac1f8390dde1faed858c40"
+MY_COMMIT="7bab658ccb4ba783b984e800a30925eea46448ff"
 
-SRC_URI=" https://github.com/philipl/vmware-host-modules/archive/${MY_COMMIT}.tar.gz -> ${P}-${MY_COMMIT}.tar.gz"
-S="${WORKDIR}/vmware-host-modules-${MY_COMMIT}"
-
+SRC_URI="https://github.com/perfect7gentleman/sources/raw/be525309bc8011d5d86ff24918635a1acd87e182/${P}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
-
 RESTRICT="mirror"
 
 RDEPEND="

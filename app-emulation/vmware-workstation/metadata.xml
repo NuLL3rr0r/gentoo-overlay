@@ -11,12 +11,13 @@
     </longdescription>
     <use>
         <flag name="macos-guests">Support macOS guests.</flag>
-        <flag name="modules">Install <pkg>app-emulation/vmware-modules</pkg> in order to run VMs locally.</flag>
-        <flag name="ovftool">Install OVF tool.</flag>
-        <flag name="vix">Install VIX. The VIX API allows you to write programs and scripts
-        that automate virtual machine operations, and run programs or manipulate
-        files within guest operating systems.
+        <flag name="modules">
+            Install
+            <pkg>app-emulation/vmware-modules</pkg>
+            in order to run VMs locally.
         </flag>
+        <flag name="ovftool">Install OVF tool.</flag>
+        <flag name="vix">Install VIX. The VIX API allows you to write programs and scripts that automate virtual machine operations, and run programs or manipulate files within guest operating systems. </flag>
         <flag name="vmware-tools-darwin">Install VMware Tools for OS X (El Capitan and later) guests.</flag>
         <flag name="vmware-tools-darwinPre15">Install VMware Tools for OS X (up to Yosemite) guests.</flag>
         <flag name="vmware-tools-linux">Install VMware Tools for Linux guests.</flag>
@@ -27,7 +28,4 @@
         <flag name="vmware-tools-winPre2k">Install VMware Tools for Windows (before 2000) guests.</flag>
         <flag name="vmware-tools-winPreVista">Install VMware Tools for Windows (after 2000, before Vista) guests.</flag>
     </use>
-    <upstream>
-        <remote-id type="github">akhuettel/systemd-vmware</remote-id>
-    </upstream>
 </pkgmetadata>
